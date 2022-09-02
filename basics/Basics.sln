@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29911.84
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Analytic", "Analytic\Analytic.csproj", "{9A2CDEF9-C0E4-4B8B-902B-E45E08D461D5}"
 EndProject
@@ -23,6 +23,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataStructures", "ds\DataStructures.csproj", "{F8B244A4-F4DF-45CC-9D30-C64CC881F250}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObjectOriented", "oops\ObjectOriented.csproj", "{72CEFBF4-760F-4283-9CE3-ECE804E2A378}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DSACracker", "DSACracker\DSACracker.csproj", "{479A7454-B095-488D-BB08-901722886FA5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -50,6 +52,10 @@ Global
 		{72CEFBF4-760F-4283-9CE3-ECE804E2A378}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{72CEFBF4-760F-4283-9CE3-ECE804E2A378}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{72CEFBF4-760F-4283-9CE3-ECE804E2A378}.Release|Any CPU.Build.0 = Release|Any CPU
+		{479A7454-B095-488D-BB08-901722886FA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{479A7454-B095-488D-BB08-901722886FA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{479A7454-B095-488D-BB08-901722886FA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{479A7454-B095-488D-BB08-901722886FA5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="BackTracking\" />
+    <Folder Include="BinaryTrees\" />
+    <Folder Include="BitManipulation\" />
+    <Folder Include="BST\" />
+    <Folder Include="DynamicProgramming\" />
+    <Folder Include="Graph\" />
+    <Folder Include="Greedy\" />
+    <Folder Include="Heap\" />
+    <Folder Include="LinkedList\" />
+    <Folder Include="Matrix\" />
+    <Folder Include="SearchAndSort\" />
+    <Folder Include="StacksAndQueues\" />
+    <Folder Include="String\" />
+    <Folder Include="Trie\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Tools\Tools.csproj" />
+  </ItemGroup>
+
+</Project>
