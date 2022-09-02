@@ -72,7 +72,7 @@ namespace BowlingBallScoring.Business
 		private int GetStrikePoint(BowlingFrame bowlingFrame)
 		{
 			// Consecutive strikes
-			if (bowlingFrame.IsStrike())
+			if (bowlingFrame.IsStrike() && bowlingFrame.nextFrame != null)
 			{
 				return 10 + bowlingFrame.nextFrame.throw1;
 			}

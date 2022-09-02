@@ -2,7 +2,6 @@
 using BowlingBallScoring.Contract;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Linq;
 
 namespace BowlingBallScoring
 {
