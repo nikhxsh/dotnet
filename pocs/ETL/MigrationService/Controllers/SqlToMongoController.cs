@@ -5,6 +5,7 @@ using MigrationService.Models;
 using MigrationService.Repository;
 using MongoDB.Bson;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -17,12 +18,16 @@ namespace MigrationService.Controllers
 	public class SqlToMongoController : ControllerBase
 	{
 		private ISqlRepository _sqlRepository;
-		private IMongoRepository _mongoRepository;
+		private string _postgresConnectionString = "Host=ims-rds.cdmnj4oncsro.us-west-2.rds.amazonaws.com;Username=postgres;Password=IMSHACK1;Database=postgres";
+		private string _sqsBackGroundUrl = "https://sqs.us-west-2.amazonaws.com/794344549935/backGround_IMS_Queue.fifo";
+		private PostgresRepository _postgresRepository;
+		private SqsRepository _sqsRepository;
 
-		public SqlToMongoController(ISqlRepository sqlRepository, IMongoRepository mongoRepository)
+		public SqlToMongoController(ISqlRepository sqlRepository)
 		{
 			_sqlRepository = sqlRepository;
-			_mongoRepository = mongoRepository;
+			_postgresRepository = new PostgresRepository(_postgresConnectionString);
+			_sqsRepository = new SqsRepository(_sqsBackGroundUrl);
 		}
 
 		[HttpPost("schema")]
@@ -49,7 +54,13 @@ namespace MigrationService.Controllers
 				return BadRequest();
 
 			// Transform table
-			var mainTableDataset = _sqlRepository.ExtractSourceData(template.Settings.Sql.Connection, template.ToSQLQuery(offset: 0, fetch: 1));
+			var mainTableDataset = _sqlRepository.ExtractSourceData(template.Settings.Sql.Connection, Parser.ToSQLQuery(
+				select: template.MainTable.Select,
+				conditions: template.MainTable.Conditions,
+				tableName: template.MainTable.TableName,
+				orderByKey: template.MainTable.Key,
+				offset: 0, 
+				fetch: template.TransferSize));
 
 			var outputList = Transform(mainTableDataset, template);
 
@@ -67,18 +78,46 @@ namespace MigrationService.Controllers
 		{
 			if (template == null)
 				return BadRequest();
-
-			var mainData = _sqlRepository.ExtractSourceData(template.Settings.Sql.Connection, template.ToSQLQuery());
-
-			var outputList = Transform(mainData, template);
-
-			await _mongoRepository.Save(template.Settings.Mongo, outputList);
-
-			return new ContentResult
+			try
 			{
-				ContentType = "application/json",
-				Content = JsonConvert.SerializeObject(new MigrationResponse { Message = "Migration Completed!" }, Formatting.Indented)
-			};
+				var postgresModel = new PostgresModelMongo()
+				{
+					count = template.TransferSize,
+					TargetDatabase = "mongo",
+					SourceDatabase = "sql",
+					Status = "Request Created",
+					sqlToMongoTemplate = template
+				};
+				var requestId = await _postgresRepository.CreateRequestEntry(postgresModel);
+
+				var sqsMessage = new SqsMessageBodyModel()
+				{
+					RequestId = requestId,
+					TargetDatabase = postgresModel.TargetDatabase,
+					Count = postgresModel.count
+				};
+
+				var SqsMessageModel = new RequestSqsModel()
+				{
+					MessageGroupId = Guid.NewGuid().ToString(),
+					MessageDeduplicationId = Guid.NewGuid().ToString(),
+					Body = JsonConvert.SerializeObject(sqsMessage)
+				};
+
+				await _sqsRepository.SendMessagetoBatchSQS(SqsMessageModel);
+
+				return new ContentResult
+				{
+					ContentType = "application/json",
+					Content = JsonConvert.SerializeObject(new MigrationResponse { Message = "Request Created!", RequestId = requestId }, Formatting.Indented)
+				};
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine(ex.Message);
+				return new ContentResult();
+			}
+			
 		}
 
 		private List<BsonDocument> Transform(DataSet mainData, SqlToMongoTemplate template)
@@ -92,18 +131,20 @@ namespace MigrationService.Controllers
 				foreach (var nest in template.NestedTables)
 				{
 					var mappingKey = item[nest.TargetKey].ToString();
-					var nestedData = _sqlRepository.ExtractSourceData(template.Settings.Sql.Connection, template.ToSQLQuery(isNestedQuery: true, nestedTable: nest, nestedMatchingId: mappingKey));
+					var nestedData = _sqlRepository.ExtractSourceData(template.Settings.Sql.Connection, Parser.ToSQLQuery(
+						select: nest.Select,
+						conditions: nest.Conditions,
+						sourceKey: nest.SourceKey,
+						tableName: nest.TableName,
+						orderByKey: nest.TargetKey,
+						isNestedQuery: true, 
+						nestedMatchingId: mappingKey));
 					var transformedData = LoadTableData(nestedData);
 					item.Add(nest.ObjectIdentifier, BsonValue.Create(transformedData));
 				}
 			}
 
 			return outputList;
-		}
-
-		private List<BsonDocument> TransformNestedTables(DataSet mainData, SqlToMongoTemplate template)
-		{
-
 		}
 
 		private List<BsonDocument> LoadTableData(DataSet data)
@@ -143,7 +184,7 @@ namespace MigrationService.Controllers
 
 				foreach (var r in row.Data)
 				{
-					schemaResponse.Columns.Add(r[1].ToString());
+					schemaResponse.Columns.Add(new Column { Name = r[1].ToString(), DataType = r[2].ToString() });
 				}
 
 				dbSchemaList.Add(schemaResponse);

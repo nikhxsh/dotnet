@@ -12,6 +12,12 @@ namespace MigrationService.Models
 	public class SchemaResponse
 	{
 		public string Table { get; set; }
-		public List<string> Columns { get; set; } = new List<string>();
+		public List<Column> Columns { get; set; } = new List<Column>();
+	}
+
+	public class Column
+	{
+		public string Name { get; set; }
+		public string DataType { get; set; }
 	}
 }

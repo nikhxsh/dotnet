@@ -388,7 +388,7 @@ namespace CSharp
         /// </summary>
         public void ParallelFor()
         {
-            var rnd = new Random();
+            var rnd = new int[] { 4, 1, 6, 2, 9, 5, 10, 3 };
             var options = new ParallelOptions
             {
                 MaxDegreeOfParallelism = 4 //it is the upper limit for the entire parallel operation, irrespective of the number of cores, max threads are 4.
@@ -396,15 +396,14 @@ namespace CSharp
 
             Console.WriteLine($"Your CPU has {Environment.ProcessorCount} Cores");
             //Executes up to 20 iterations of a loop in parallel.
-            var result = Parallel.For(
-                101,
-                121,
+            var result = Parallel.For( 
+                0,
+                rnd.Count(),
                 options,
                 (index) =>
                 {
-                    int delay;
                     Console.WriteLine($"Beginning Iteration {index}");
-                    delay = rnd.Next(1000, 2000);
+                    var delay = rnd[index];
                     Thread.Sleep(delay);
                     Console.WriteLine($"Total execution time by Thread {Thread.CurrentThread.ManagedThreadId} of Iteration {index} is {MockDataUtility.EllapsedTime(delay)}");
                     Console.WriteLine($"Iteration {index} Completed");

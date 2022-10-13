@@ -10,13 +10,19 @@ import { FormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { PrettyPrintPipe } from './jsonprint.pipe';
 import { NgModelformModule } from '@nikxsh/ngmodelform';
+import { SqltomongoComponent } from './sqltomongo/sqltomongo.component';
+import { SqltopostgreComponent } from './sqltopostgre/sqltopostgre.component';
+import { DragDropModule } from '@angular/cdk/drag-drop'
 
 @NgModule({
   declarations: [
     AppComponent,
-    PrettyPrintPipe
+    PrettyPrintPipe,
+    SqltomongoComponent,
+    SqltopostgreComponent
   ],
   imports: [
+    DragDropModule,
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,

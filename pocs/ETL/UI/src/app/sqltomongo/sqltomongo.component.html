@@ -1,0 +1,115 @@
+<div class="row">
+  <div class="col div-rounded-border">
+    <div class="basic-spacing">
+      <ngmodelform [formFields]="sqlFormFields" [submitText]="'Fetch Schema'" (onSubmit)="getDbSchema($event)">
+      </ngmodelform>
+    </div>
+    <div class="basic-spacing">
+      <ngb-accordion #acc="ngbAccordion" class="form-field">
+        <ngb-panel title="{{r.table}}" id="toggle-{{i}}" *ngFor="let r of dbSchema;let i = index">
+          <ng-template ngbPanelContent>
+            <div class="basic-spacing">
+              <ul class="list-group">
+                <li class="list-group-item" *ngFor="let c of r.columns;let j = index">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" [(ngModel)]="r.selectedColumns[j]"
+                      (change)="onColumnSelect(r.table, c.name, $event)" [disabled]="!(r.mainCheck || r.nestedCheck)">
+                    <label class="form-check-label">
+                      {{c.name}}
+                    </label>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="basic-spacing">
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="maintableradio" [value]="r.table"
+                  [(ngModel)]="r.mainCheck" (ngModelChange)="onMainTableSelect(r.table, i)">
+                <label class="form-check-label">
+                  Main
+                </label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" name="nestedCheckbox" [(ngModel)]="r.nestedCheck"
+                  (change)="onNestedTableSelect(r.table, r.nestedCheck, i)">
+                <label class="form-check-label" for="inlineCheckbox1">Nested</label>
+              </div>
+            </div>
+            <div class="basic-spacing" *ngIf="r.mainCheck">
+              <form>
+                <div class="form-group">
+                  <label>Select primary key</label>
+                  <select class="form-control" name="sourceId" [(ngModel)]="r.tableKey"
+                    (change)="onTableKeySelect(r.tableKey)">
+                    <option [value]="c.name" *ngFor="let c of getColumns(i);">{{c.name}}</option>
+                  </select>
+                </div>
+              </form>
+            </div>
+            <div class="basic-spacing" *ngIf="r.nestedCheck && !r.mainCheck">
+              <form>
+                <div class="form-group">
+                  <label>Target Table</label>
+                  <input class="form-control" type="text" name="targetTable"
+                    [value]="this.template.mainTable!.tableName" disabled>
+                </div>
+                <div class="form-group">
+                  <label>Object Name</label>
+                  <input class="form-control" type="text" name="objectName" [ngModel]="r.objectName"
+                    (ngModelChange)="onObjectNameSelect(i, $event, r.table)" placeholder="E.g. products">
+                </div>
+                <div class="form-group">
+                  <label>Select Source Id</label>
+                  <select class="form-control" name="sourceId" [(ngModel)]="r.sourceId"
+                    (change)="onSourceIdSelect(i, r.sourceId, r.table)">
+                    <option [value]="c.name" *ngFor="let c of getColumns(i);">{{c.name}}</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Select Target Id</label>
+                  <select class="form-control" name="targetId" [(ngModel)]="r.targetId"
+                    (change)="onTargetIdSelect(i, r.targetId, r.table)">
+                    <option [value]="c" *ngFor="let c of targetColumns">{{c}}</option>
+                  </select>
+                </div>
+              </form>
+            </div>
+          </ng-template>
+        </ngb-panel>
+      </ngb-accordion>
+    </div>
+  </div>
+  <div class="col div-rounded-border">
+    <div class="basic-spacing">
+      <ngmodelform [formFields]="mongoFormFields" [submitText]="'Update template'"
+        (onSubmit)="saveMongoSettings($event)">
+      </ngmodelform>
+    </div>
+    <div class="basic-spacing">
+      <textarea class="form-control area-field" rows="20" [(ngModel)]="displayTemplate"></textarea>
+    </div>
+    <hr />
+    <div>
+      <button class="btn btn-primary" (click)="getSampleDocument()" [disabled]="!canGetSampleDocument()">Verify
+        Document</button>
+    </div>
+    <div class="terminal">
+      <pre [innerHTML]="sampleDocument | prettyprint"></pre>
+    </div>
+    <hr />
+    <div>
+      <button class="btn btn-primary" (click)="migrateData()"
+        [disabled]="!(canGetSampleDocument() && this.sampleDocument)">Start Migration</button>
+      <p>&nbsp;</p>
+      <div class="alert alert-primary" role="alert" *ngIf="requestStatus">
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item"><b>Request Id : </b>{{requestStatus.requestId}}</li>
+          <li class="list-group-item"><b>Count : </b>{{requestStatus.count}}</li>
+          <li class="list-group-item"><b>Message : </b>{{requestStatus.status}}</li>
+        </ul>
+      </div>
+      <p>&nbsp;</p>
+      <button class="btn btn-primary" (click)="getStatus()" [disabled]="!requestStatus.requestId">Refresh</button>
+    </div>
+  </div>
+</div>

@@ -1,4 +1,4 @@
-﻿{
+{
   "$schema": "http://json.schemastore.org/launchsettings.json",
   "iisSettings": {
     "windowsAuthentication": false,
@@ -14,17 +14,23 @@
       "launchBrowser": true,
       "launchUrl": "weatherforecast",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "dev",
+        "AWS_ENABLE_ENDPOINT_DISCOVERY": "false",
+        "AWS_REGION": "us-west-2",
+        "AWS_PROFILE": "cred"
       }
     },
     "MigrationService": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "weatherforecast",
-      "applicationUrl": "https://localhost:5001;http://localhost:5000",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+        "ASPNETCORE_ENVIRONMENT": "dev",
+        "AWS_ENABLE_ENDPOINT_DISCOVERY": "false",
+        "AWS_REGION": "us-west-2",
+        "AWS_PROFILE": "cred"
+      },
+      "applicationUrl": "https://localhost:5001;http://localhost:5000"
     }
   }
 }
