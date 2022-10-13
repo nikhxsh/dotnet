@@ -5,43 +5,55 @@ namespace MigrationService.Helper
 {
 	public static class Parser
 	{
-		public static string ToSQLQuery(this SqlToMongoTemplate template, 
-			bool isNestedQuery = false, 
-			NestedTable nestedTable = null, 
+		public static string ToSQLQuery(
+			string[] select,
+			string conditions,
+			string tableName,
+			string orderByKey = "",
+			bool isNestedQuery = false,
+			string sourceKey = "",
 			string nestedMatchingId = "", 
 			int offset = 0, 
 			int fetch = 0)
 		{
-			var selectQuery = string.Join(",", template.MainTable.Select);
+			var selectQuery = string.Join(",", select);
 
-			var conditions = string.Empty;
-			if (!string.IsNullOrEmpty(template.MainTable.Conditions))
-				conditions += $"Where {template.MainTable.Conditions} ";
+			var conditionsQuery = string.Empty;
+			if (!string.IsNullOrEmpty(conditions))
+				conditionsQuery += $"WHERE {conditions} ";
 
-			if(isNestedQuery && nestedTable != null)
+			if(isNestedQuery && !string.IsNullOrEmpty(sourceKey) && !string.IsNullOrEmpty(nestedMatchingId))
 			{
-				var nestedCondition = $"{nestedTable.Key} = '{nestedMatchingId}'";
-				if (!string.IsNullOrEmpty(conditions))
-					conditions += $"AND {nestedCondition}'";
+				var nestedCondition = $"{sourceKey} = '{nestedMatchingId}'";
+
+				if (string.IsNullOrEmpty(conditionsQuery))
+					nestedCondition = $"WHERE {nestedCondition}";
+
+				if (!string.IsNullOrEmpty(conditionsQuery))
+					conditionsQuery += $"AND {nestedCondition}'";
 				else
-					conditions += nestedCondition;
+					conditionsQuery += nestedCondition;
 			}
 
 			var limitQuery = string.Empty;
 			if (fetch > 0)
 				limitQuery = $"OFFSET {offset} ROWS FETCH NEXT {fetch} ROW ONLY";
 
-			return $"{selectQuery} " +
-				   $"FROM {template.MainTable.TableName} " +
-				   $"{conditions} " +
-				   $"ORDER BY {template.MainTable.Key} " +
+			var oderByQuery = string.Empty;
+			if (!string.IsNullOrEmpty(orderByKey))
+				oderByQuery = $"ORDER BY {orderByKey}";
+
+			return $"SELECT {selectQuery} " +
+				   $"FROM {tableName} " +
+				   $"{conditionsQuery} " +
+				   $"{oderByQuery} " +
 				   $"{limitQuery}";
 		}
 
 		public static string ToSchemaQuery(this SchemaRequest schemaRequest)
 		{
 			return @$"USE [{schemaRequest.DbName}]
-					SELECT CONCAT(isc.TABLE_SCHEMA, '.', isc.TABLE_NAME) TABLE_NAME, isc.COLUMN_NAME
+					SELECT CONCAT(isc.TABLE_SCHEMA, '.', isc.TABLE_NAME) TABLE_NAME, isc.COLUMN_NAME, isc.DATA_TYPE
 					FROM sys.tables st INNER JOIN INFORMATION_SCHEMA.COLUMNS isc
 					ON st.name = isc.TABLE_NAME
 					WHERE isc.TABLE_NAME LIKE '%{schemaRequest.Filter}%' AND st.is_ms_shipped = 0";

@@ -1,0 +1,62 @@
+<div class="row">
+    <div class="col-3 div-rounded-border">
+        <div class="basic-spacing">
+            <ngmodelform [formFields]="sqlFormFields" [submitText]="'Fetch Schema'" (onSubmit)="getDbSchema($event)">
+            </ngmodelform>
+        </div>
+        <div class="basic-spacing">
+            <ul class="list-group" *ngFor="let r of dbSchema;let i = index">
+                <li class="list-group-item">
+                    <input class="form-check-input" type="radio" name="maintableradio" [value]="r.table"
+                        [(ngModel)]="r.mainCheck" (ngModelChange)="onMainTableSelect(r.table, i)">
+                    &nbsp;&nbsp;{{r.table}}
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="col div-rounded-border">
+        <div class="basic-spacing">
+            <ngmodelform [formFields]="postgreFormFields" [submitText]="'Save'"
+                (onSubmit)="onPostgreSettingUpdate($event)">
+            </ngmodelform>
+            <hr />
+            <div class="basic-spacing">
+                <div cdkDropListGroup>
+                    <div class="row">
+                        <div class="col example-container">
+                            <h2>Available Columns</h2>
+                            <div cdkDropList [cdkDropListData]="targetColumns" class="example-list"
+                                (cdkDropListDropped)="drop($event)">
+                                <div class="example-box" *ngFor="let item of targetColumns.columns" cdkDrag>{{item.name}}</div>
+                            </div>
+                        </div>
+                        <div class="col example-container"  *ngFor="let t of tableSelection;let i = index">
+                            <h2>{{t.name}}</h2>
+                            <div cdkDropList [cdkDropListData]="t" class="example-list"
+                                (cdkDropListDropped)="drop($event)">
+                                <div class="example-box" *ngFor="let item of t.columns" cdkDrag>{{item.name}}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="basic-spacing">
+                <textarea class="form-control area-field" rows="20" [(ngModel)]="displayTemplate"></textarea>
+            </div>
+            <hr />
+            <div>
+              <button class="btn btn-primary" (click)="migrateData()">Start Migration</button>
+              <p>&nbsp;</p>
+              <div class="alert alert-primary" role="alert" *ngIf="requestStatus">
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item"><b>Request Id : </b>{{requestStatus.requestId}}</li>
+                  <li class="list-group-item"><b>Count : </b>{{requestStatus.count}}</li>
+                  <li class="list-group-item"><b>Message : </b>{{requestStatus.status}}</li>
+                </ul>
+              </div>
+              <p>&nbsp;</p>
+              <button class="btn btn-primary" (click)="getStatus()" [disabled]="!requestStatus.requestId">Refresh</button>
+            </div>
+        </div>
+    </div>
+</div>

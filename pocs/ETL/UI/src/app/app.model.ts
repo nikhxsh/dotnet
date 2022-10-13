@@ -10,23 +10,22 @@ class DbSchemaRequest {
 
 interface DbSchemaResponse {
 	table: string
-	columns: string[]
+	tableKey: string
+	columns: Column[]
 	selectedColumns: string[]
 	mainCheck: boolean
 	nestedCheck: boolean
 	objectName: string
 	sourceId: string
 	targetTable: string
-	targetId: string	
+	targetId: string
 }
 
-class Template {
-	settings?: TemplateSettings
-	mainTable?: Table
-	nestedTables?: NestedTable[]
-	transferSize?: number = 0
+class Column {
+	name: string
+	dataType: string
 
-    public constructor(init?:Partial<Template>) {
+    public constructor(init?:Partial<Column>) {
         Object.assign(this, init);
     }
 }
@@ -34,8 +33,31 @@ class Template {
 class TemplateSettings {
 	sql?: Settings
 	mongo?: Settings
+	postgres?: Settings
 
     public constructor(init?:Partial<TemplateSettings>) {
+        Object.assign(this, init);
+    }
+}
+
+class SQLToMongoTemplate {
+	settings?: TemplateSettings
+	mainTable?: Table
+	nestedTables?: NestedTable[]
+	transferSize?: number = 0
+
+    public constructor(init?:Partial<SQLToMongoTemplate>) {
+        Object.assign(this, init);
+    }
+}
+
+class SQLToPostgreTemplate {
+	settings?: TemplateSettings
+	mainTable?: Table
+	targetTables?: TargetTable[]
+	transferSize?: number = 0
+
+    public constructor(init?:Partial<SQLToPostgreTemplate>) {
         Object.assign(this, init);
     }
 }
@@ -51,6 +73,7 @@ class Settings {
 }
 
 class Table {
+	key?: string
 	tableName?: string
 	select?: string[]
 	conditions?: string
@@ -74,4 +97,44 @@ class NestedTable {
     }
 }
 
-export { DbSchemaRequest, DbSchemaResponse, Template, TemplateSettings, Settings, Table, NestedTable };
+class TargetTable {
+	tableName: string
+	columnMappings: ColumnMapper[]
+
+    public constructor(init?:Partial<TargetTable>) {
+        Object.assign(this, init);
+    }
+}
+
+class ColumnMapper {
+	source: string
+	target: string
+	dataType: string
+	isPrimaryKey: boolean
+
+    public constructor(init?:Partial<ColumnMapper>) {
+        Object.assign(this, init);
+    }
+}
+
+class TableSelection {
+	name: string
+	columns: Column[]
+
+    public constructor(init?:Partial<TableSelection>) {
+        Object.assign(this, init);
+    }
+}
+
+class RequestStatus {
+	requestId: number
+	count: number
+	status: string
+	message: string
+
+    public constructor(init?:Partial<RequestStatus>) {
+        Object.assign(this, init);
+    }
+}
+
+export { DbSchemaRequest, DbSchemaResponse, Column, SQLToMongoTemplate, SQLToPostgreTemplate, TemplateSettings, Settings, Table, NestedTable, TargetTable, ColumnMapper, TableSelection, RequestStatus };

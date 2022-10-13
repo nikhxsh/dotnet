@@ -1,0 +1,14 @@
+﻿{
+  "profiles": {
+    "ProducerGennericDataMigration": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "environmentVariables": {
+        "AWS_PROFILE": "cred",
+        "AWS_REGION": "us-west-2",
+        "AWS_ENABLE_ENDPOINT_DISCOVERY": "false",
+        "ASPNETCORE_ENVIRONMENT": "dev"
+      }
+    }
+  }
+}

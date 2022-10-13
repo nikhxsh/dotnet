@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Amazon.Sqs" Version="0.21.2" />
+    <PackageReference Include="AWSSDK.SQS" Version="3.7.2.105" />
+    <PackageReference Include="MongoDB.Bson" Version="2.17.1" />
+  </ItemGroup>
+
+</Project>

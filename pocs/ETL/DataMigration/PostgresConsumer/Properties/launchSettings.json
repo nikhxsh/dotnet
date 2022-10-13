@@ -1,0 +1,13 @@
+{
+  "profiles": {
+    "PostgresConsumer": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "AWS_REGION": "us-west-2",
+        "DOTNET_ENVIRONMENT": "Development",
+        "AWS_PROFILE": "cred"
+      },
+      "dotnetRunMessages": "true"
+    }
+  }
+}
