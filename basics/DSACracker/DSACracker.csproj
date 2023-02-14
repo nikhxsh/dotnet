@@ -6,20 +6,48 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="BackTracking\" />
-    <Folder Include="BinaryTrees\" />
-    <Folder Include="BitManipulation\" />
-    <Folder Include="BST\" />
-    <Folder Include="DynamicProgramming\" />
-    <Folder Include="Graph\" />
-    <Folder Include="Greedy\" />
-    <Folder Include="Heap\" />
-    <Folder Include="LinkedList\" />
-    <Folder Include="Matrix\" />
-    <Folder Include="SearchAndSort\" />
-    <Folder Include="StacksAndQueues\" />
-    <Folder Include="String\" />
-    <Folder Include="Trie\" />
+    <Compile Remove="BackTracking\**" />
+    <Compile Remove="BinaryTrees\**" />
+    <Compile Remove="BitManipulation\**" />
+    <Compile Remove="BST\**" />
+    <Compile Remove="DynamicProgramming\**" />
+    <Compile Remove="Graph\**" />
+    <Compile Remove="Greedy\**" />
+    <Compile Remove="Heap\**" />
+    <Compile Remove="LinkedList\**" />
+    <Compile Remove="Matrix\**" />
+    <Compile Remove="SearchAndSort\**" />
+    <Compile Remove="StacksAndQueues\**" />
+    <Compile Remove="String\**" />
+    <Compile Remove="Trie\**" />
+    <EmbeddedResource Remove="BackTracking\**" />
+    <EmbeddedResource Remove="BinaryTrees\**" />
+    <EmbeddedResource Remove="BitManipulation\**" />
+    <EmbeddedResource Remove="BST\**" />
+    <EmbeddedResource Remove="DynamicProgramming\**" />
+    <EmbeddedResource Remove="Graph\**" />
+    <EmbeddedResource Remove="Greedy\**" />
+    <EmbeddedResource Remove="Heap\**" />
+    <EmbeddedResource Remove="LinkedList\**" />
+    <EmbeddedResource Remove="Matrix\**" />
+    <EmbeddedResource Remove="SearchAndSort\**" />
+    <EmbeddedResource Remove="StacksAndQueues\**" />
+    <EmbeddedResource Remove="String\**" />
+    <EmbeddedResource Remove="Trie\**" />
+    <None Remove="BackTracking\**" />
+    <None Remove="BinaryTrees\**" />
+    <None Remove="BitManipulation\**" />
+    <None Remove="BST\**" />
+    <None Remove="DynamicProgramming\**" />
+    <None Remove="Graph\**" />
+    <None Remove="Greedy\**" />
+    <None Remove="Heap\**" />
+    <None Remove="LinkedList\**" />
+    <None Remove="Matrix\**" />
+    <None Remove="SearchAndSort\**" />
+    <None Remove="StacksAndQueues\**" />
+    <None Remove="String\**" />
+    <None Remove="Trie\**" />
   </ItemGroup>
 
   <ItemGroup>

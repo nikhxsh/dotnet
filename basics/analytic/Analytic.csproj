@@ -6,7 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Dynamic\" />
+    <Compile Remove="Dynamic\**" />
+    <EmbeddedResource Remove="Dynamic\**" />
+    <None Remove="Dynamic\**" />
   </ItemGroup>
 
 </Project>

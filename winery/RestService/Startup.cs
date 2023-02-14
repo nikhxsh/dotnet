@@ -11,6 +11,7 @@ using System.IO;
 using System.Threading;
 using Storage;
 using Storage.Datastore;
+using WineryStore.API.Middleware;
 
 namespace RestService
 {
@@ -45,6 +46,13 @@ namespace RestService
 			services.AddScoped<IWineryDataStore, WineryDataStore>();
 			services.AddScoped<IWineDataStore, WineDataStore>();
 
+			// Transient objects are always different. The transient OperationId value is different in the IndexModel and in the middleware.
+			services.AddTransient<ILifetimeTransient, Lifetime>();
+			// Scoped objects are the same for a given request but differ across each new request.
+			services.AddScoped<ILifetimeScoped, Lifetime>();
+			// Singleton objects are the same for every request.
+			services.AddSingleton<ILifetimeSingleton, Lifetime>();
+
 			//Install-Package Microsoft.EntityFrameworkCore.SqlServer -Version 2.1.1
 			services.AddDbContext<Storage.EF.Datastore.WineryContext>(options =>
 				options.UseSqlServer(Configuration.GetConnectionString("WineryConnection")
@@ -74,6 +82,8 @@ namespace RestService
 			app.UseCors(WineryAllowSpecificOrigins);
 			app.UseHttpsRedirection();
 			app.UseRouting();
+
+			app.UseServiceLifetimeMiddleware();
 
 			app.UseEndpoints(endpoints =>
 			{

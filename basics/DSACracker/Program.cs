@@ -1,4 +1,5 @@
 ﻿using DSACracker.Array;
+using DSACracker.Strings;
 using System;
 
 namespace DSACracker
@@ -9,7 +10,11 @@ namespace DSACracker
 		{
 			Console.WriteLine("DSA Cracker!");
 			//_ = new ReverseAnArray();
-			_ = new MinMaxElement();
+			//_ = new MinMaxElement();
+
+			//_ = new PerfectSubstrings();
+			//_ = new BackspaceString();
+			_ = new PalindromicSubstrings();
 		}
 	}
 }
