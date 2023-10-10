@@ -5,51 +5,51 @@ using System.Runtime.InteropServices;
 
 namespace CSharp
 {
-    /// <summary>
-    /// - Memory 
-    ///   1. When any process gets triggered, separate virtual space is assigned to that process, from a physical memory which is the same and used 
-    ///      by every process of a system, any program deals with virtual space not with physical memory, GC also deals with the same virtual memory 
-    ///      to allocate and de-allocate memory. Basically, there are free-blocks that exist in virtual memory (also known as holes), when any object 
-    ///      request for memory allocation manager searches for free-block and assigns memory to the said object.
-    ///   2. Virtual memory has three blocks:
-    ///      Free(empty space)
-    ///      Reserved(already allocated)
-    ///      Committed(This block is give-out to physical memory and not available for space allocation)
-    ///
-    /// - Garbage Collection
-    ///   1. When you create any object in C#, CLR (common language runtime) allocates memory for the object from heap.
-    ///   2. This process is repeated for each newly created object, but there is a limitation to everything, Memory is not un-limited and we 
-    ///      need to clean some used space in order to make room for new objects, Here, the concept of garbage collection is introduced, 
-    ///   3. Garbage collector manages allocation and reclaiming of memory. GC (Garbage collector) makes a trip to the heap and collects all objects 
-    ///      that are no longer used by the application and then makes them free from memory.
-    ///   https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/
-    ///
-    /// - How GC Works?
-    ///   1. GC works on managed heap, which is nothing but a block of memory to store objects, when garbage collection process is put in motion, it 
-    ///      checks for dead objects and the objects which are no longer used, then it compacts the space of live object and tries to free more memory.
-    ///   2. Basically, heap is managed by different 'Generations', it stores and handles long-lived and short-lived objects, see the below generations 
-    ///      of Heap:
-    ///      a. Generation 0: This generation holds short-lived objects, e.g., Temporary objects. GC initiates garbage collection process frequently in 
-    ///         this generation.
-    ///      b. Generation 1: This generation is the buffer between short-lived and long-lived objects.
-    ///      c. This generation holds long-lived objects like a static and global variable, that needs to be persisted for a certain amount of time. 
-    ///         Objects which are not collected in generation Zero, are then moved to generation 1, such objects are known as survivors, similarly objects 
-    ///         which are not collected in generation One, are then moved to generation 2 and from there onwards objects remain in the same generation.
-    ///
-    /// - How GC decide who's gonna die?
-    ///   1. When virtual memory is running out of space.
-    ///   2. When allocated memory is suppressed acceptable threshold (when GC found if the survival rate (living objects) is high, then it increases the 
-    ///      threshold allocation).
-    ///   3. When we call GC.Collect() method explicitly, as GC runs continuously, we actually do not need to call this method.
-    ///
-    /// - Managed and unmanaged objects/resources
-    ///   1. Managed objects: Created, managed and under scope of CLR, pure .NET code managed by runtime, Anything that lies within .NET scope and under 
-    ///     .NET framework classes such as string, int, bool variables are referred to as managed code.
-    ///   2. UnManaged objects: Created outside the control of .NET libraries and are not managed by CLR, example of such unmanaged code is COM objects, 
-    ///      file streams, connection objects, network related instances, Interop objects,registries, pointers etc. (Basically, third party libraries that 
-    ///      are referred in .NET code.)
-    /// </summary>
-    class GarbageCollection
+	/// <summary>
+	/// - Memory 
+	///   1. When any process gets triggered, separate virtual space is assigned to that process, from a physical memory which is the same and used 
+	///      by every process of a system, any program deals with virtual space not with physical memory, GC also deals with the same virtual memory 
+	///      to allocate and de-allocate memory. Basically, there are free-blocks that exist in virtual memory (also known as holes), when any object 
+	///      request for memory allocation manager searches for free-block and assigns memory to the said object.
+	///   2. Virtual memory has three blocks:
+	///      Free(empty space)
+	///      Reserved(already allocated)
+	///      Committed(This block is give-out to physical memory and not available for space allocation)
+	///
+	/// - Garbage Collection
+	///   1. When you create any object in C#, CLR (common language runtime) allocates memory for the object from heap.
+	///   2. This process is repeated for each newly created object, but there is a limitation to everything, Memory is not un-limited and we 
+	///      need to clean some used space in order to make room for new objects, Here, the concept of garbage collection is introduced, 
+	///   3. Garbage collector manages allocation and reclaiming of memory. GC (Garbage collector) makes a trip to the heap and collects all objects 
+	///      that are no longer used by the application and then makes them free from memory.
+	///   https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/
+	///
+	/// - How GC Works?
+	///   1. GC works on managed heap, which is nothing but a block of memory to store objects, when garbage collection process is put in motion, it 
+	///      checks for dead objects and the objects which are no longer used, then it compacts the space of live object and tries to free more memory.
+	///   2. Basically, heap is managed by different 'Generations', it stores and handles long-lived and short-lived objects, see the below generations 
+	///      of Heap:
+	///      a. Generation 0: This generation holds short-lived objects, e.g., Temporary objects. GC initiates garbage collection process frequently in 
+	///         this generation.
+	///      b. Generation 1: This generation is the buffer between short-lived and long-lived objects.
+	///      c. Generation 2:This generation holds long-lived objects like a static and global variable, that needs to be persisted for a certain amount of time. 
+	///         Objects which are not collected in generation Zero, are then moved to generation 1, such objects are known as survivors, similarly objects 
+	///         which are not collected in generation One, are then moved to generation 2 and from there onwards objects remain in the same generation.
+	///
+	/// - How GC decide who's gonna die?
+	///   1. When virtual memory is running out of space.
+	///   2. When allocated memory is suppressed acceptable threshold (when GC found if the survival rate (living objects) is high, then it increases the 
+	///      threshold allocation).
+	///   3. When we call GC.Collect() method explicitly, as GC runs continuously, we actually do not need to call this method.
+	///
+	/// - Managed and unmanaged objects/resources
+	///   1. Managed objects: Created, managed and under scope of CLR, pure .NET code managed by runtime, Anything that lies within .NET scope and under 
+	///     .NET framework classes such as string, int, bool variables are referred to as managed code.
+	///   2. UnManaged objects: Created outside the control of .NET libraries and are not managed by CLR, example of such unmanaged code is COM objects, 
+	///      file streams, connection objects, network related instances, Interop objects,registries, pointers etc. (Basically, third party libraries that 
+	///      are referred in .NET code.)
+	/// </summary>
+	class GarbageCollection
     {
         public void Play()
         {

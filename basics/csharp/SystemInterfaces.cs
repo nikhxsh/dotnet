@@ -24,8 +24,7 @@ namespace CSharp
             //ICollectionExample();
         }
 
-
-        public void IComparerExample()
+		public void IComparerExample()
         {
             try
             {
@@ -56,8 +55,8 @@ namespace CSharp
 
         /// <summary>
         /// - Exposes a method that compares two objects.
-        /// - This interface is used in conjunction with the Array.Sort and Array.BinarySearch methods. It provides a way to 
-        ///   customize the sort order of a collection.
+        /// - This interface is used in conjunction with the Array.Sort and Array.BinarySearch methods. 
+        /// - It provides a way to customize the sort order of a collection.
         /// </summary>
         public class EmployeeIComparer : IComparer
         {

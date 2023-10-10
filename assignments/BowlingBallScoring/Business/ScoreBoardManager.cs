@@ -1,17 +1,19 @@
-﻿using BowlingBallScoring.Contract;
+﻿using BowlingBall.Contract;
+using BowlingBall.Models;
+using System;
 
-namespace BowlingBallScoring.Business
+namespace BowlingBall
 {
 	/// <summary>
-	/// Manages scoreBoard for bowling game
+	/// Manage frames and score for bowling game
 	/// </summary>
 	public class ScoreBoardManager : IScoreBoardManager
 	{
-		public BowlingFrame[] BowlingFrames { get; private set; }
+		private readonly IBowlingFrames<Frame> bowlingFrames;
 
-		public ScoreBoardManager(int totalFrames = 10)
+		public ScoreBoardManager(IBowlingFrames<Frame> bowlingFrames)
 		{
-			BowlingFrames = new BowlingFrame[totalFrames];
+			this.bowlingFrames = bowlingFrames;
 		}
 
 		/// <summary>
@@ -19,9 +21,9 @@ namespace BowlingBallScoring.Business
 		/// </summary>
 		/// <param name="bowlingFrame"></param>
 		/// <param name="index"></param>
-		public void AddBowlingFrame(BowlingFrame bowlingFrame, int index)
+		public void AddBowlingFrame(Frame frame, int index)
 		{
-			BowlingFrames[index] = bowlingFrame;
+			bowlingFrames.AddLast(frame);
 		}
 
 		/// <summary>
@@ -29,9 +31,9 @@ namespace BowlingBallScoring.Business
 		/// </summary>
 		public void CalculateScore()
 		{
-			for (int i = 0; i < BowlingFrames.Length; i++)
+			for (int i = 0; i < bowlingFrames.GetSize(); i++)
 			{
-				CalculateScoreForBowlingFrame(BowlingFrames[i], i);
+				CalculateScoreForBowlingFrame(bowlingFrames.GetValue(i), i);
 			}
 		}
 
@@ -40,28 +42,52 @@ namespace BowlingBallScoring.Business
 		/// </summary>
 		/// <param name="bowlingFrame"></param>
 		/// <param name="index"></param>
-		public void CalculateScoreForBowlingFrame(BowlingFrame bowlingFrame, int index)
+		public void CalculateScoreForBowlingFrame(Frame frame, int index)
 		{
-			var currentScore = bowlingFrame.CalculateBasicScore();
+			var currentScore = frame.CalculateBasicScore();
+
+			var nextFrame = bowlingFrames.GetValue(index + 1);
+			var prevFrame = bowlingFrames.GetValue(index - 1);
+
 			// Strike
-			if (bowlingFrame.IsStrike() && bowlingFrame.nextFrame != null)
+			if (frame.IsStrike() && nextFrame != null)
 			{
-				currentScore += GetStrikePoint(bowlingFrame.nextFrame);
+				currentScore += GetStrikePoint(nextFrame, index + 1);
 			}
 			// Spare
-			else if (bowlingFrame.IsSpare() && bowlingFrame.nextFrame != null)
+			else if (frame.IsSpare() && nextFrame != null)
 			{
-				currentScore += GetSparePoint(bowlingFrame.nextFrame);
+				currentScore += GetSparePoint(nextFrame);
 			}
 
 			// Get previous bowling frame score
-			if (bowlingFrame.previousFrame != null)
+			if (prevFrame != null)
 			{
-				currentScore += bowlingFrame.previousFrame.score;
+				currentScore += prevFrame.Score;
 			}
 
 			// Update score against bowling frame
-			bowlingFrame.score = currentScore;
+			frame.Score = currentScore;
+		}
+
+		/// <summary>
+		/// Print score for each frame
+		/// </summary>
+		public void PrintScore()
+		{
+			for (int j = 0; j < bowlingFrames.GetSize(); j++)
+			{
+				Console.Write($"{bowlingFrames.GetValue(j).Score} ");
+			}
+		}
+
+		/// <summary>
+		/// Get final score
+		/// </summary>
+		/// <returns></returns>
+		public int GetTotalScore()
+		{
+			return bowlingFrames.GetValue(bowlingFrames.GetSize() - 1).Score;
 		}
 
 		/// <summary>
@@ -69,16 +95,17 @@ namespace BowlingBallScoring.Business
 		/// </summary>
 		/// <param name="bowlingFrame"></param>
 		/// <returns></returns>
-		private int GetStrikePoint(BowlingFrame bowlingFrame)
+		private int GetStrikePoint(Frame frame, int index)
 		{
+			var nextFrame = bowlingFrames.GetValue(index + 1);
 			// Consecutive strikes
-			if (bowlingFrame.IsStrike() && bowlingFrame.nextFrame != null)
+			if (frame.IsStrike() && nextFrame != null)
 			{
-				return 10 + bowlingFrame.nextFrame.throw1;
+				return 10 + nextFrame.Throw1;
 			}
 			else
 			{
-				return bowlingFrame.throw1 + bowlingFrame.throw2;
+				return frame.Throw1 + frame.Throw2;
 			}
 		}
 
@@ -87,9 +114,9 @@ namespace BowlingBallScoring.Business
 		/// </summary>
 		/// <param name="bowlingFrame"></param>
 		/// <returns></returns>
-		private int GetSparePoint(BowlingFrame bowlingFrame)
+		private int GetSparePoint(Frame frame)
 		{
-			return bowlingFrame.throw1;
+			return frame.Throw1;
 		}
 	}
 }

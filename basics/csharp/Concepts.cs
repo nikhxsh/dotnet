@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Threading.Tasks;
 using Tools.Models;
 
@@ -64,9 +65,9 @@ namespace CSharp
         {
             Singer singer = new Singer();
 
-            // An interface must be initialized together with a class object that implements it. If MyClass implements IMyInterface, you create an instance of 
-            // IMyInterface as shown in the following
-            IStudent student = new Student();
+			// An interface must be initialized together with a class object that implements it. If Student implements IStudent, you create an instance of 
+			// Student as shown in the following
+			IStudent student = new Student();
         }
 
         private void Types()
@@ -185,12 +186,14 @@ namespace CSharp
             IEnumerable<object> objects = strings;
 
             // For generic type parameters, the out keyword specifies that the type parameter is covariant. You can use the out keyword in generic interfaces and delegates.
-            ICovariant<Object> iobj1 = new Sample1<Object>();
-            ICovariant<String> istr1 = new Sample1<String>();
+            ICovariant<string> iobj1 = new Covariant<string>();
+            ICovariant<object> istr1 = iobj1;
 
-            // You can assign istr1 to iobj1 because
-            // the ICovariant interface is covariant.
-            iobj1 = istr1;
+			// ICovariant<string> istr2 = istr1; // The following statement generates a compiler error because classes are invariant
+
+			// You can assign istr1 to iobj1 because
+			// the ICovariant interface is covariant.
+			iobj1 = istr1;
 
 
             // Contravariance.             
@@ -203,18 +206,29 @@ namespace CSharp
             Action<string> actString = actObject;
 
             //For generic type parameters, the in keyword specifies that the type parameter is contravariant. You can use the in keyword in generic interfaces and delegates.
-            IContravariant<Object> iobj2 = new Sample2<Object>();
-            IContravariant<String> istr2 = new Sample2<String>();
+            IContravariant<object> iobj2 = new Sample2<object>();
+            IContravariant<string> istr2 = new Sample2<string>();
 
             // You can assign iobj2 to istr2 because
             // the IContravariant interface is contravariant.
             istr2 = iobj2;
         }
 
-        interface ICovariant<out R> { }
-        class Sample1<R> : ICovariant<R> { }
+		// For generic type parameters, the in keyword specifies that the type parameter is covariant
+		interface ICovariant<out R>
+		{
+			R GetSomething();
+		}
+		class Covariant<R> : ICovariant<R>
+		{
+			R ICovariant<R>.GetSomething()
+			{
+				return default(R);
+			}
+		}
 
-        interface IContravariant<in A> { }
+		// For generic type parameters, the in keyword specifies that the type parameter is contravariant
+		interface IContravariant<in A> { }
         class Sample2<A> : IContravariant<A> { }
 
         /// <summary>
@@ -565,14 +579,81 @@ namespace CSharp
 
         private void Attributes()
         {
-            //C# enables programmers to invent new kinds of declarative information, called attributes. Programmers can then attach attributes 
-            //to various program entities, and retrieve attribute information in a run-time environment. 
+			//C# enables programmers to invent new kinds of declarative information, called attributes. Programmers can then attach attributes 
+			//to various program entities, and retrieve attribute information in a run-time environment. 
 
-            //For instance, a framework might define a HelpAttribute attribute that can be placed on certain program elements (such as classes and methods) 
-            //to provide a mapping from those program elements to their documentation.
-        }
+			//For instance, a framework might define a HelpAttribute attribute that can be placed on certain program elements (such as classes and methods) 
+			//to provide a mapping from those program elements to their documentation.
+		}
 
-        private void CSharpVersion6()
+
+		private string TryCatch()
+		{
+			try
+			{
+				return "a";
+			}
+			catch (Exception)
+			{
+				return "b";
+			}
+			finally
+			{
+				//Compile time error: controll can not leave the body of Finally clause
+				//return "c";
+			}
+		}
+
+		class Generic<T>
+			where T : struct // The type argument must be a value type. Any value type except Nullable<T>
+							 // where T : Student 
+							 // where T: class // The type argument must be a reference type. This constraint applies also to any class, interface, delegate, or array type
+							 // where T : unmanaged // The type argument must be an unmanaged type.(Beginning with C# 7.3)
+							 // where T : new() // The type argument must have a public parameterless constructor. with other constraints, the new() constraint must be last.
+							 // where T : Base // The type argument must be or derive from the specified base class.
+							 // where T : IStudent // The type argument must be or implement the specified interface
+							 // where T : Delegate // enables you to write code that works with delegates in a type-safe manner(Beginning with C# 7.3)
+							 // where T : Enum // Enum provide type-safe programming to cache results from using the static methods in System.Enum(Beginning with C# 7.3)
+		{
+			public T[] Array { get; set; }
+			private int Index { get; set; }
+
+			public Generic(int length)
+			{
+				Array = new T[length];
+			}
+
+			public void Send<TData>(ref TData param1)
+			{
+
+			}
+
+			public void Add(T content)
+			{
+				Array[Index] = content;
+			}
+		}
+
+		class Base
+		{
+			public Base(int x)
+			{
+			}
+		}
+		// You can apply constraints to multiple parameters, and multiple constraints to a single parameter
+		class Test<T, U>
+			 where U : struct
+			 where T : Base, new()
+		{ }
+
+		/// <summary>
+		/// Generic Interfaces
+		/// </summary>
+		interface IMonth<T> { }
+		interface IMarch<T> : IMonth<T> { }
+		interface IJanuary : IMonth<int> { }
+
+		private void CSharpVersion6()
         {
             //Auto-property initializers
             //public ICollection<double> Grades { get; } = new List<double>();
@@ -662,8 +743,8 @@ namespace CSharp
             // Expression-bodied get/set accessors.
             //  public string Label
             //  {
-            // ...get => label;
-            //  ..set => this.label = value ?? "Default label";
+            //    ...get => label;
+            //    ..set => this.label = value ?? "Default label";
             //  }
 
             //Generalized async return types
@@ -674,71 +755,90 @@ namespace CSharp
             //  }
         }
 
+		private void CSharpVersion9() // .NET5
+		{
+			// Record types
+			// - You use the record keyword to define a reference type that provides built-in functionality for encapsulating data.
+			// - You can create record types with immutable properties by using positional parameters or standard property syntax
+			Person person = new(123) { FirstName = "Nancy", LastName = "Davolio" };
 
-        private string TryCatch()
-        {
-            try
-            {
-                return "a";
-            }
-            catch (Exception)
-            {
-                return "b";
-            }
-            finally
-            {
-                //Compile time error: controll can not leave the body of Finally clause
-                //return "c";
-            }
-        }
+			// Init only setters
+			// - you can create init accessors instead of set accessors for properties and indexers
+			var now = new WeatherObservation
+			{
+				RecordedAt = DateTime.Now,
+				TemperatureInCelsius = 20,
+				PressureInMillibars = 998.0m
+			};
 
-        class Generic<T>
-            where T : struct // The type argument must be a value type. Any value type except Nullable<T>
-                             // where T : Student 
-                             // where T: class // The type argument must be a reference type. This constraint applies also to any class, interface, delegate, or array type
-                             // where T : unmanaged // The type argument must be an unmanaged type.(Beginning with C# 7.3)
-                             // where T : new() // The type argument must have a public parameterless constructor. with other constraints, the new() constraint must be last.
-                             // where T : Base // The type argument must be or derive from the specified base class.
-                             // where T : IStudent // The type argument must be or implement the specified interface
-                             // where T : Delegate // enables you to write code that works with delegates in a type-safe manner(Beginning with C# 7.3)
-                             // where T : Enum // Enum provide type-safe programming to cache results from using the static methods in System.Enum(Beginning with C# 7.3)
-        {
-            public T[] Array { get; set; }
-            private int Index { get; set; }
+			// Top-level statements
+			// - Top-level statements remove unnecessary ceremony from many applications
 
-            public Generic(int length)
-            {
-                Array = new T[length];
-            }
+			// Fit and finish features
+			// - you can omit the type in a new expression when the created object's type is already known
+			private List<WeatherObservation> _observations = new();
+	}
 
-            public void Send<TData>(ref TData param1)
-            {
+		public record Person(long Id)
+		{
+			public required string FirstName { get; set; }
+			public required string LastName { get; set; }
+		};
 
-            }
+		/// <summary>
+		/// A record can inherit from another record. However, a record can't inherit from a class, and a class can't inherit from a record.
+		/// </summary>
+		/// <param name="Id"></param>
+		/// <param name="Grade"></param>
+		public record Teacher(long Id, int Grade) : Person(Id)
+		{
+		}
 
-            public void Add(T content)
-            {
-                Array[Index] = content;
-            }
-        }
+		public struct WeatherObservation
+		{
+			public DateTime RecordedAt { get; init; }
+			public decimal TemperatureInCelsius { get; init; }
+			public decimal PressureInMillibars { get; init; }
 
-        class Base
-        {
-            public Base(int x)
-            {
-            }
-        }
-        // You can apply constraints to multiple parameters, and multiple constraints to a single parameter
-        class Test<T, U>
-             where U : struct
-             where T : Base, new()
-        { }
+			public override string ToString() =>
+				$"At {RecordedAt:h:mm tt} on {RecordedAt:M/d/yyyy}: " +
+				$"Temp = {TemperatureInCelsius}, with {PressureInMillibars} pressure";
+		}
 
-        /// <summary>
-        /// Generic Interfaces
-        /// </summary>
-        interface IMonth<T> { }
-        interface IMarch<T> : IMonth<T> { }
-        interface IJanuary : IMonth<int> { }
-    }
+		private void CSharpVersion11() // .NET7
+		{
+			// Generic attributes
+			// public class GenericAttribute<T> : Attribute { }
+			// [GenericAttribute<string>()]
+			// public string Method() => default;
+
+			// Raw string literals
+			string longMessage = """
+                This is a long message.
+                It has several lines.
+                    Some are indented
+                            more than others.
+                Some should start at the first column.
+                Some have "quoted text" in them.
+                """;
+		}
+
+		private void CSharpVersion12() // .NET8
+		{
+			// Primary constructors
+			// - You can now create primary constructors in any class and struct. Primary constructors are no longer restricted to record types
+
+			// Collection expressions
+			// - Collection expressions introduce a new terse syntax to create common collection values. Inlining other collections into these values
+			//   is possible using a spread operator ...
+			//int[] row0 = [1, 2, 3];
+			//int[] row1 = [4, 5, 6];
+			//int[] row2 = [7, 8, 9];
+			//int[] single = [..row0, ..row1, ..row2];
+
+			// Inline arrays
+			// - Inline arrays enable a developer to create an array of fixed size in a struct type
+
+		}
+	}
 }

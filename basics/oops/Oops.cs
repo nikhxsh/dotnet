@@ -247,8 +247,9 @@ namespace ObjectOriented
 		///     2. Operator overloading
 		/// - Dynamic  Polymorphism:  
 		///    C# allows you to create abstract classes that are used to provide partial class implementation of an interface.
-		///    Implementation is completed when a derived class inherits from it. Abstract classes contain abstract methods,which are implemented by 
-		///    the derived class. The derived classes have more specialized functionality.
+		///    Implementation is completed when a derived class inherits from it. Abstract classes contain abstract methods, <summary>
+		/// - Polymorphism is a consequence of inheritance. Inheriting a method from parent is useful, but being able to modify a method if 
+		///    which are implemented by the derived class. The derived classes have more specialized functionality.
 		///    Here are the rules about abstract classes:
 		///     1. You cannot create an instance of an abstract class
 		///     2. You cannot declare an abstract method outside an abstract class
@@ -330,7 +331,7 @@ namespace ObjectOriented
 			Parent obj1 = new Parent("Parent");
 			obj1.Display(); //"Display Parent"
 			Child obj2 = new Child("Child 1");
-			obj2.Display(); //"Display hild 1"
+			obj2.Display(); //"Display Child 1"
 			Parent obj3 = new Child("Child 2"));
 			obj3.Display(); //"Display Parent"
 
@@ -359,7 +360,7 @@ namespace ObjectOriented
 		{
 			private string _childname;
 
-			public Child(string name)
+			public Child(string name) : base(name)
 			{
 				_childname = name;
 			}

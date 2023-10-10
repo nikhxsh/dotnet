@@ -1,13 +1,13 @@
-using BowlingBallScoring.Business;
-using BowlingBallScoring.Contract;
+using BowlingBall.Contract;
+using BowlingBall.DS;
+using BowlingBall.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
 
-namespace BowlingBallScoring.Tests
+namespace BowlingBall.Tests
 {
-	public class Tests
+
+	public class GameFixture
 	{
 		private IGame _game;
 
@@ -17,11 +17,14 @@ namespace BowlingBallScoring.Tests
 			var serviceProvider = new ServiceCollection()
 				.AddSingleton<IScoreBoardManager, ScoreBoardManager>()
 				.AddSingleton<IGame, Game>()
+				.AddSingleton<IBowlingFrames<Frame>, BowlingFrames<Frame>>()
 				.BuildServiceProvider();
 			_game = serviceProvider.GetService<IGame>();
 		}
 
 		[Test]
+		[TestCase(new string[] { "0,0", "0,0", "0,0", "0,0", "0,0", "0,0", "0,0", "0,0", "0,0", "0,0" }, 0)]
+		[TestCase(new string[] { "0,0", "0,0", "0,0", "0,0", "0,0", "0,0", "0,0", "0,0", "0,0", "0,10" }, 10)]
 		[TestCase(new string[] { "10", "9,1", "5,5", "7,2", "10", "10", "10", "9,0", "8,2", "9,1,10" }, 187)]
 		[TestCase(new string[] { "1,4", "4,5", "6,4", "5,5", "10", "0,1", "7,3", "6,4", "10", "2,8,6" }, 133)]
 		[TestCase(new string[] { "6,1", "9,0", "8,2", "5,5", "8,0", "6,2", "9,1", "7,2", "8,2", "9,1,7" }, 127)]
@@ -30,10 +33,13 @@ namespace BowlingBallScoring.Tests
 		public void Check_For_Valid_Score(string[] rolls, int score)
 		{
 			// Arrange
-			_game.AddThrowsBowlingFrame(rolls);
+			for (int i = 0; i < rolls.Length; i++)
+			{
+				_game.Roll(rolls[i], i);
+			}
 
 			// Act
-			var finalScore = _game.CalculateScore();
+			var finalScore = _game.GetScore();
 
 			// Assert
 			Assert.AreEqual(finalScore, score);

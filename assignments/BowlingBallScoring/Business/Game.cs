@@ -1,12 +1,10 @@
-﻿using BowlingBallScoring.Contract;
+﻿using BowlingBall.Contract;
+using BowlingBall.Models;
 using System;
 using System.Linq;
 
-namespace BowlingBallScoring.Business
+namespace BowlingBall
 {
-	/// <summary>
-	/// Manage bowling game
-	/// </summary>
 	public class Game : IGame
 	{
 		private readonly IScoreBoardManager _boardManager;
@@ -16,60 +14,38 @@ namespace BowlingBallScoring.Business
 		}
 
 		/// <summary>
-		/// Adds throws to bowling frame
+		/// Add number of pins knocked down in each roll, prepare bowling frame for each
 		/// </summary>
-		/// <param name="rolls"></param>
-		public void AddThrowsBowlingFrame(string[] rolls)
+		/// <param name="pins"></param>
+		/// <param name="frameIndex"></param>
+		public void Roll(string pins, int frameIndex)
 		{
-			for (int i = 0; i < rolls.Length; i++)
-			{
-				var bowlingFrame = new BowlingFrame(i);
-				var throws = rolls[i].Split(',');
+			var bowlingFrame = new Frame();
+			var throws = pins.Split(',');
 
-				if (throws.ElementAtOrDefault(0) != null)
-					bowlingFrame.AddThrow(Convert.ToInt16(throws[0]));
+			if (throws.ElementAtOrDefault(0) != null)
+				bowlingFrame.AddThrow(Convert.ToInt16(throws[0]), frameIndex);
 
-				if (throws.ElementAtOrDefault(1) != null)
-					bowlingFrame.AddThrow(Convert.ToInt16(throws[1]));
+			if (throws.ElementAtOrDefault(1) != null)
+				bowlingFrame.AddThrow(Convert.ToInt16(throws[1]), frameIndex);
 
-				if (throws.ElementAtOrDefault(2) != null)
-					bowlingFrame.AddThrow(Convert.ToInt16(throws[2]));
+			if (throws.ElementAtOrDefault(2) != null)
+				bowlingFrame.AddThrow(Convert.ToInt16(throws[2]), frameIndex);
 
-				_boardManager.AddBowlingFrame(bowlingFrame, i);
-			}
-
-			LinkBowlingFrames();
+			_boardManager.AddBowlingFrame(bowlingFrame, frameIndex);
 		}
 
 		/// <summary>
-		/// Links previous and next frame like linked list
+		/// Get score
 		/// </summary>
-		private void LinkBowlingFrames()
-		{
-			for (int j = 0; j < _boardManager.BowlingFrames.Length; j++)
-			{
-				var frame = _boardManager.BowlingFrames[j];
-				if (j > 0)
-					frame.AddPreviousFrame(_boardManager.BowlingFrames[j - 1]);
-				if (j < _boardManager.BowlingFrames.Length - 1)
-					frame.AddNextFrame(_boardManager.BowlingFrames[j + 1]);
-			}
-		}
-
-		/// <summary>
-		/// Calculate score and print as output
-		/// </summary>
-		public int CalculateScore()
+		/// <returns></returns>
+		public int GetScore()
 		{
 			_boardManager.CalculateScore();
 
-			for (int j = 0; j < _boardManager.BowlingFrames.Length; j++)
-			{
-				Console.Write($"{_boardManager.BowlingFrames[j].score} ");
-			}
-			Console.WriteLine();
+			_boardManager.PrintScore();
 
-			return _boardManager.BowlingFrames[_boardManager.BowlingFrames.Length - 1].score;
+			return _boardManager.GetTotalScore();
 		}
 	}
 }

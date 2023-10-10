@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Linq;
+using System.Reflection.Emit;
+using System.Reflection;
 
 namespace ObjectOriented
 {
@@ -155,13 +157,14 @@ namespace ObjectOriented
 			}
 		}
 
+
 		/// <summary>
 		/// “D” - DIP (Dependency Inversion Principle)
-		///  DIP states that the higher level modules should be coupled with the lower level modules with complete 
-		///  abstraction  
-		///  The general idea of this principle is as simple as it is important: High-level modules, which provide complex logic, should be easily 
-		///  reusable and unaffected by changes in low-level modules, which provide utility features.
-		///  To achieve that, you need to introduce an abstraction that decouples the high-level and low-level modules from each other.
+		///  - Dependency inversion principle is a specific methodology for loosely coupled software modules
+		///  - The principle states:
+		///    a. High-level modules should not import anything from low-level modules.Both should depend on abstractions (e.g., interfaces).
+		///    b. Abstractions should not depend on details. Details (concrete implementations) should depend on abstractions.
+		///  - By dictating that both high-level and low-level objects must depend on the same abstraction
 		/// </summary>
 		class DIP
 		{

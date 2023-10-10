@@ -1,8 +1,8 @@
-﻿namespace BowlingBallScoring.Contract
+﻿namespace BowlingBall.Contract
 {
 	public interface IGame
 	{
-		void AddThrowsBowlingFrame(string[] rolls);
-		int CalculateScore();
+		void Roll(string pins, int frame);
+		int GetScore();
 	}
 }

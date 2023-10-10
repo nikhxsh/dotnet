@@ -22,7 +22,7 @@ namespace ObjectOriented.CreationalPatterns
 				Console.WriteLine("Same innstance");
 
 			LoadBalancer balancer = LoadBalancer.GetInstance();
-				
+
 			for (int i = 0; i < 20; i++)
 			{
 				string server = balancer.Server;
@@ -30,14 +30,14 @@ namespace ObjectOriented.CreationalPatterns
 			}
 		}
 
-		class LoadBalancer
+		sealed class LoadBalancer
 		{
 			private static LoadBalancer _loadBalancer;
 			private List<string> _servers = new List<string>();
 			private Random _random = new Random();
 
 			private static object syncLock = new object();
-			protected LoadBalancer()
+			private LoadBalancer()
 			{
 				_servers.Add("Server 1");
 				_servers.Add("Server 2");
@@ -66,6 +66,43 @@ namespace ObjectOriented.CreationalPatterns
 				{
 					int r = _random.Next(_servers.Count);
 					return _servers[r].ToString();
+				}
+			}
+		}
+
+
+		/// <summary>
+		/// We can choose to create the instance of Singleton class when the class is loaded.This is thread-safe without using locking.
+		/// </summary>
+		public sealed class EarlySingleton
+		{
+			//create instance eagerly
+			private static EarlySingleton instance = new EarlySingleton();
+
+			private EarlySingleton() { }
+
+			public static EarlySingleton GetInstance()
+			{
+				return instance;//just return the instance
+			}
+		}
+
+		/// <summary>
+		/// - It's simple and performs well. It also allows you to check whether or not the instance has been created yet with the IsValueCreated property
+		/// - The code above implicitly uses LazyThreadSafetyMode.ExecutionAndPublication as the thread safety mode for the Lazy<Singleton>
+		/// </summary>
+		public sealed class LazySingleton
+		{
+			//create instance eagerly
+			private static readonly Lazy<LazySingleton> lazySingleton = new Lazy<LazySingleton>(() => new LazySingleton());
+
+			private LazySingleton() { }
+
+			public static LazySingleton GetInstance
+			{
+				get
+				{
+					return lazySingleton.Value;
 				}
 			}
 		}

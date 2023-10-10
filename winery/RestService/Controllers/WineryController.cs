@@ -7,11 +7,13 @@ using RestService.Mappers;
 using RestService.Models;
 using Common.Utils;
 using Storage;
+using WineryStore.API.Filters;
 
 namespace RestService.Controllers
 {
 	[Route("api/wineries")]
 	[ApiController]
+	[CustomHttpsOnlyFilter]
 	public class WineryController : ControllerBase
 	{
 		private readonly IWineryRepository wineryRepository;

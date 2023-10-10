@@ -1,4 +1,5 @@
 ﻿using DSACracker.Array;
+using DSACracker.Basic;
 using DSACracker.Strings;
 using System;
 
@@ -14,7 +15,8 @@ namespace DSACracker
 
 			//_ = new PerfectSubstrings();
 			//_ = new BackspaceString();
-			_ = new PalindromicSubstrings();
+			//_ = new PalindromicSubstrings();
+			_ = new NumberToText();
 		}
 	}
 }

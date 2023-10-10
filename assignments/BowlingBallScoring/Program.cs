@@ -1,5 +1,5 @@
-﻿using BowlingBallScoring.Business;
-using BowlingBallScoring.Contract;
+﻿using BowlingBall;
+using BowlingBall.Contract;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 
@@ -22,11 +22,12 @@ namespace BowlingBallScoring
 
 			var bowlingGame = serviceProvider.GetService<IGame>();
 
-			bowlingGame.AddThrowsBowlingFrame(input);
+			for (int i = 0; i < input.Length; i++)
+			{
+				bowlingGame.Roll(input[i], i);
+			}
 
-			var finalScore = bowlingGame.CalculateScore();
-
-			Console.WriteLine($"Final Score : {finalScore}");
+			bowlingGame.GetScore();
 		}
 	}
 }

@@ -1,6 +1,6 @@
-﻿namespace BowlingBallScoring.Models
+﻿namespace BowlingBall.Models
 {
-	internal class BowlerModel
+	public class BowlerModel
 	{
 		public string Name { get; set; }
 		public int Score { get; set; }
