@@ -1,4 +1,4 @@
-﻿namespace ObjectOriented.SystemDesigns
+﻿namespace ObjectOriented.SystemDesigns.ATMDesign
 {
     interface IBankDatabase
     {

@@ -36,3 +36,10 @@ The common type system defines how types are declared, used, and managed in the 
 2. Common Language Specification (CLS)
 It is a sub set of CTS and it specifies a set of rules that needs to be adhered or satisfied by all language compilers targeting CLR. It helps in cross language inheritance and cross language debugging.
 [More details](https://docs.microsoft.com/en-us/dotnet/standard/language-independence-and-language-independent-components)
+
+
+### Links
+- [What is .NET?](https://learn.microsoft.com/en-us/dotnet/core/introduction)
+- [.NET vs. .NET Framework](https://learn.microsoft.com/en-us/dotnet/standard/choosing-core-framework-server)
+- [Choose between ASP.NET 4.x and ASP.NET Core](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/choose-aspnet-framework?view=aspnetcore-7.0)
+- [How Does CLR Work](https://www.loginworks.com/blogs/clr-work-dot-net-framework/)

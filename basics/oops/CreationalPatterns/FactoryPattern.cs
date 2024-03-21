@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Data;
+using System.Data.SqlClient;
 
 namespace ObjectOriented.CreationalPatterns
 {
@@ -13,40 +13,35 @@ namespace ObjectOriented.CreationalPatterns
 	{
 		public FactoryPattern()
 		{
-			Document[] documents = new Document[2];
-
-			documents[0] = new Resume();
-			documents[1] = new Report();
-
-			foreach (var item in documents)
-			{
-				Console.WriteLine($"{item.GetType().Name}:");
-				foreach (IPage page in item.Pages)
-				{
-					Console.WriteLine($"{page.GetType().Name} {page.Title}");
-				}
-			}
-
+			var sqlconnection = ConnectionFactory.GetConnection(ConnectionType.SQL, "sql-connection-string");
+			var postgreconnection = ConnectionFactory.GetConnection(ConnectionType.PostGre, "postgre-connection-string");
 		}
 
 		/// <summary>
 		/// The 'Product' abstract class
 		/// </summary>
-		interface IPage
+		interface IConnection
 		{
-			string Title { get; }
+			IDbConnection Connection { get; }
 		}
 
 		/// <summary>
 		/// A 'ConcreteProduct' class
 		/// </summary>
-		class SkillsPage : IPage
+		class SqlDBConnection : IConnection
 		{
-			public string Title
+			private readonly string _connectionString;
+
+			public SqlDBConnection(string connectionString)
+			{
+				_connectionString = connectionString;
+			}
+
+			public IDbConnection Connection
 			{
 				get
 				{
-					return "Dot Net";
+					return new SqlConnection(_connectionString);
 				}
 			}
 		}
@@ -54,149 +49,39 @@ namespace ObjectOriented.CreationalPatterns
 		/// <summary>
 		/// A 'ConcreteProduct' class
 		/// </summary>
-		class EducationPage : IPage
+		class PostgreDBConnection : IConnection
 		{
-			public string Title
+			private readonly string _connectionString;
+
+			public PostgreDBConnection(string connectionString)
+			{
+				_connectionString = connectionString;
+			}
+
+			public IDbConnection Connection
 			{
 				get
 				{
-					return "BE - IT";
+					return new SqlConnection(_connectionString);
 				}
 			}
 		}
 
-		/// <summary>
-		/// A 'ConcreteProduct' class
-		/// </summary>
-		class ExperiencePage : IPage
+		static class ConnectionFactory
 		{
-			public string Title
-			{
-				get
+			public static IConnection GetConnection(ConnectionType type, string connectionString) {
+				switch (type)
 				{
-					return "3.7 Years";
+					case ConnectionType.SQL:
+						return new SqlDBConnection(connectionString);
+					case ConnectionType.PostGre:
+						return new PostgreDBConnection(connectionString);
+					default:
+						return null;
 				}
 			}
 		}
 
-		/// <summary>
-		/// A 'ConcreteProduct' class
-		/// </summary>
-		class IntroductionPage : IPage
-		{
-			public string Title
-			{
-				get
-				{
-					return "My self Blah-Blah";
-				}
-			}
-		}
-
-		/// <summary>
-		/// A 'ConcreteProduct' class
-		/// </summary>
-		class ResultsPage : IPage
-		{
-			public string Title
-			{
-				get
-				{
-					return "Fucking awesome";
-				}
-			}
-		}
-
-		/// <summary>
-		/// A 'ConcreteProduct' class
-		/// </summary>
-		class ConclusionPage : IPage
-		{
-			public string Title
-			{
-				get
-				{
-					return "lol.. No conclusion, if you're engineer! :D";
-				}
-			}
-		}
-
-		/// <summary>
-		/// A 'ConcreteProduct' class
-		/// </summary>
-		class SummaryPage : IPage
-		{
-			public string Title
-			{
-				get
-				{
-					return "In summer you will get summary!";
-				}
-			}
-		}
-
-		/// <summary>
-		/// A 'ConcreteProduct' class
-		/// </summary>
-		class BibliographyPage : IPage
-		{
-			public string Title
-			{
-				get
-				{
-					return "Ohh I see...";
-				}
-			}
-		}
-
-		/// <summary>
-		/// The 'Creator' abstract class
-		/// </summary>
-		abstract class Document
-		{
-			private List<IPage> _pages = new List<IPage>();
-
-			public Document()
-			{
-				this.CreatePages();
-			}
-
-			public List<IPage> Pages
-			{
-				get { return _pages; }
-			}
-
-			public abstract void CreatePages();
-		}
-
-		/// <summary>
-		/// A 'ConcreteCreator' class
-		/// </summary>
-		class Resume : Document
-		{
-			// Factory Method implementation
-			public override void CreatePages()
-			{
-				Pages.Add(new SkillsPage());
-				Pages.Add(new EducationPage());
-				Pages.Add(new ExperiencePage());
-			}
-		}
-
-		/// <summary>
-		/// A 'ConcreteCreator' class
-		/// </summary>
-		class Report : Document
-		{
-			// Factory Method implementation
-			public override void CreatePages()
-			{
-				Pages.Add(new IntroductionPage());
-				Pages.Add(new ResultsPage());
-				Pages.Add(new ConclusionPage());
-				Pages.Add(new SummaryPage());
-				Pages.Add(new BibliographyPage());
-			}
-		}
+		enum ConnectionType { SQL, PostGre }
 	}
 }

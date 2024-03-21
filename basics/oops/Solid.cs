@@ -114,7 +114,7 @@ namespace ObjectOriented
 			public EvenTotal(int[] numbers) : base(numbers)
 			{ }
 
-			public new double GetTotal() => numbers.Where(x => (x % 2 == 0)).Sum();
+			public double GetTotal() => numbers.Where(x => (x % 2 == 0)).Sum();
 		}
 
 		/// <summary>

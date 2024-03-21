@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 
 namespace ObjectOriented.StructuralPatterns
@@ -16,39 +17,30 @@ namespace ObjectOriented.StructuralPatterns
 		public DecoratorPattern()
 		{
 			// Create book
-			Book book = new Book("Worley", "Inside ASP.NET", 10);
-			book.Display();
+			var sms = new SMS("SMS Sender", "Migration Created with Id 1234");
+			sms.Display();
 
-			// Create video
-			Video video = new Video("Spielberg", "Jaws", 23, 92);
-			video.Display();
+			var slack = new Slack("Nikhilesh", "dev-updates", "Merge to develop successfull");
+			slack.Display();
 
-			// Make video borrowable, then borrow and display
-			Console.WriteLine("Making video borrowable:");
+			// Make slack trackable, then track activity
+			Console.WriteLine("Making message trackable:");
 
-			Borrowable borrowvideo = new Borrowable(video);
-			borrowvideo.BorrowItem("Customer #1");
-			borrowvideo.BorrowItem("Customer #2");
+			var trackMessage = new TrackMessage(slack);
+			trackMessage.TrackActivity("127.0.0.1", "Logged in");
+			trackMessage.TrackActivity("127.0.0.1", "Sent message to dev-updates");
 
-			borrowvideo.Display();
-
-			// Wait for user
-			Console.ReadKey();
+			trackMessage.Display();
 		}
 
 		/// <summary>
 		/// The 'Component' abstract class
 		/// </summary>
-		abstract class LibraryItem
+		abstract class Notifier
 		{
-			private int _numCopies;
-
-			// Property
-			public int NumCopies
-			{
-				get { return _numCopies; }
-				set { _numCopies = value; }
-			}
+			protected string IP { get; set; }
+			protected string Message { get; set; }
+			protected DateTime Timestamp { get; set; }
 
 			public abstract void Display();
 		}
@@ -56,108 +48,101 @@ namespace ObjectOriented.StructuralPatterns
 		/// <summary>
 		/// The 'ConcreteComponent' class
 		/// </summary>
-		class Book : LibraryItem
+		class SMS : Notifier
 		{
-			private string _author;
-			private string _title;
+			private string Sender { get; set; }
+			private string Provider { get; set; }
 
 			// Constructor
-			public Book(string author, string title, int numCopies)
+			public SMS(string sender, string message)
 			{
-				this._author = author;
-				this._title = title;
-				this.NumCopies = numCopies;
+				Sender = sender;
+				Message = message;
+				Timestamp = DateTime.Now;
 			}
 
 			public override void Display()
 			{
-				Console.WriteLine("\nBook ------ ");
-				Console.WriteLine(" Author: {0}", _author);
-				Console.WriteLine(" Title: {0}", _title);
-				Console.WriteLine(" # Copies: {0}", NumCopies);
+				Console.WriteLine("---- Message ---- ");
+				Console.WriteLine($"Sender: {Sender}");
+				Console.WriteLine($"Message: {Message}");
+				Console.WriteLine($"Time: {Timestamp}");
 			}
 		}
 
 		/// <summary>
 		/// The 'ConcreteComponent' class
 		/// </summary>
-		class Video : LibraryItem
+		class Slack : Notifier
 		{
-			private string _director;
-			private string _title;
-			private int _playTime;
+			private string Sender { get; set; }
+			private string Channel { get; set; }
 
 			// Constructor
-			public Video(string director, string title,
-			  int numCopies, int playTime)
+			public Slack(string sender, string channel, string message)
 			{
-				this._director = director;
-				this._title = title;
-				this.NumCopies = numCopies;
-				this._playTime = playTime;
+				Sender = sender;
+				Channel = channel;
+				Message = message;
+				Timestamp = DateTime.Now;
 			}
 
 			public override void Display()
 			{
-				Console.WriteLine("\nVideo ----- ");
-				Console.WriteLine(" Director: {0}", _director);
-				Console.WriteLine(" Title: {0}", _title);
-				Console.WriteLine(" # Copies: {0}", NumCopies);
-				Console.WriteLine(" Playtime: {0}\n", _playTime);
+				Console.WriteLine("---- Message ---- ");
+				Console.WriteLine($"Sender: {Sender}");
+				Console.WriteLine($"Channel: {Channel}");
+				Console.WriteLine($"Message: {Message}");
+				Console.WriteLine($"Time: {Timestamp}");
 			}
 		}
+
 
 		/// <summary>
 		/// The 'Decorator' abstract class
 		/// </summary>
-		abstract class Decorator : LibraryItem
+		abstract class Decorator : Notifier
 		{
-			protected LibraryItem libraryItem;
+			protected Notifier notifier;
 
 			// Constructor
-			public Decorator(LibraryItem libraryItem)
+			public Decorator(Notifier notifier)
 			{
-				this.libraryItem = libraryItem;
+				this.notifier = notifier;
 			}
 
 			public override void Display()
 			{
-				libraryItem.Display();
+				notifier.Display();
 			}
 		}
 
 		/// <summary>
 		/// The 'ConcreteDecorator' class
 		/// </summary>
-		class Borrowable : Decorator
+		class TrackMessage : Decorator
 		{
-			protected List<string> borrowers = new List<string>();
+			protected List<string> activities = new List<string>();
 
 			// Constructor
-			public Borrowable(LibraryItem libraryItem)
-			  : base(libraryItem)
+			public TrackMessage(Notifier notifier)
+			  : base(notifier)
 			{
 			}
 
-			public void BorrowItem(string name)
+			public void TrackActivity(string ip, string detail)
 			{
-				borrowers.Add(name);
-				libraryItem.NumCopies--;
-			}
-
-			public void ReturnItem(string name)
-			{
-				borrowers.Remove(name);
-				libraryItem.NumCopies++;
+				IP = ip;
+				activities.Add(detail);
 			}
 
 			public override void Display()
 			{
 				base.Display();
 
-				foreach (string borrower in borrowers)
+				foreach (string activity in activities)
 				{
-					Console.WriteLine(" borrower: " + borrower);
+					Console.WriteLine($"{IP} : {activity}");
 				}
 			}
 		}

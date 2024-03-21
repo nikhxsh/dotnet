@@ -43,11 +43,17 @@ namespace CSharp
 	///   3. When we call GC.Collect() method explicitly, as GC runs continuously, we actually do not need to call this method.
 	///
 	/// - Managed and unmanaged objects/resources
-	///   1. Managed objects: Created, managed and under scope of CLR, pure .NET code managed by runtime, Anything that lies within .NET scope and under 
+	///   1. Managed resources: Created, managed and under scope of CLR, pure .NET code managed by runtime, Anything that lies within .NET scope and under 
 	///     .NET framework classes such as string, int, bool variables are referred to as managed code.
-	///   2. UnManaged objects: Created outside the control of .NET libraries and are not managed by CLR, example of such unmanaged code is COM objects, 
-	///      file streams, connection objects, network related instances, Interop objects,registries, pointers etc. (Basically, third party libraries that 
-	///      are referred in .NET code.)
+	///   2. Unmanaged resources: Created outside the control of .NET libraries and are not managed by CLR, example:
+    ///      - COM objects
+    ///      - File streams
+    ///      - Connection objects
+    ///      - Network related instances
+    ///      - Interop objects
+    ///      - Registries 
+    ///      - Pointers
+    ///      (Basically, third party libraries that are referred in .NET code.)
 	/// </summary>
 	class GarbageCollection
     {
@@ -237,7 +243,7 @@ namespace CSharp
     ///    - After the garbage collector has discovered that an object is inaccessible, unless the object has been exempted from finalization by a 
     ///      call to the GC.SuppressFinalize method.
     ///
-    ///https://docs.microsoft.com/en-us/dotnet/api/system.object.finalize?view=netframework-4.8
+    /// https://docs.microsoft.com/en-us/dotnet/api/system.object.finalize?view=netframework-4.8
     /// </summary>
     class FinalizeX
     {

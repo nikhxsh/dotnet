@@ -24,6 +24,116 @@ namespace CSharp
             //ICollectionExample();
         }
 
+
+		public void IEnumerableExample()
+        {
+            Employee[] employees = new Employee[3]
+            {
+                new Employee { EmployeeId = 101, Name = "John" },
+                new Employee { EmployeeId = 102, Name = "Jim" },
+                new Employee { EmployeeId = 103, Name = "Sue" }
+            };
+
+			var peopleList = new People(employees);
+			foreach (Employee p in peopleList)
+				Console.WriteLine($"{p.EmployeeId}, {p.Name}");
+		}
+
+		/// <summary>
+		/// - System.Collections
+		/// - IEnumerable is the base interface for all collections that can be enumerated
+		/// - IEnumerable contains a single method, GetEnumerator, which returns an IEnumerator
+		/// - IEnumerator provides the ability to iterate through the collection by exposing a Current property and MoveNext and Reset methods
+		/// - You can iterate through each element in the IEnumerable. You can not edit the items like adding, deleting, updating, etc. 
+		///   instead you just use a container to contain a list of items
+		/// - An IEnumerable does not hold even the count of the items in the list, instead, you have to iterate over the elements to get 
+		///   the count of items
+		///   
+		/// 
+		/// Note:
+		///   - ICollection <= derives from IEnumerable
+		///      - Extends it’s functionality to add, remove, update element in the list
+		///      - The main difference between the IList<T> and ICollection<T> interfaces is that IList<T> allows you to access elements via an index. 
+        ///        IList<T> describes array-like types. Elements in an ICollection<T> can only be accessed through enumeration. Both allow the insertion 
+        ///        and deletion of elements
+		///   - IList <= derives from ICollection
+		///      - Can perform all operations combined from IEnumerable and ICollection and some more operations like inserting or removing an element 
+		///        in the middle of a list
+		///      - You can use a foreach loop or a for loop to iterate over the elements
+		///   - IQueryable <= extends ICollection
+		///      - Generates a LINQ to SQL expression that is executed over the database layer
+		///      - Generates an expression tree
+		/// </summary>
+		public class People : IEnumerable
+		{
+
+			private readonly Employee[] _employees;
+			public People(Employee[] pArray)
+			{
+				_employees = new Employee[pArray.Length];
+
+				for (int i = 0; i < pArray.Length; i++)
+				{
+					_employees[i] = pArray[i];
+				}
+			}
+
+			// Implementation for the GetEnumerator method.
+			IEnumerator IEnumerable.GetEnumerator()
+			{
+				return new EmployeeEnum(_employees);
+			}
+		}
+
+		// When you implement IEnumerable, you must also implement IEnumerator.
+		public class EmployeeEnum : IEnumerator
+		{
+			public Employee[] _employees;
+
+			// Enumerators are positioned before the first element
+			// until the first MoveNext() call.
+			int position = -1;
+
+			public EmployeeEnum(Employee[] list)
+			{
+				_employees = list;
+			}
+
+			public bool MoveNext()
+			{
+				position++;
+				return (position < _employees.Length);
+			}
+
+			public void Reset()
+			{
+				position = -1;
+			}
+
+			object IEnumerator.Current
+			{
+				get
+				{
+					return Current;
+				}
+			}
+
+			public Employee Current
+			{
+				get
+				{
+					try
+					{
+						return _employees[position];
+					}
+					catch (IndexOutOfRangeException)
+					{
+						throw new InvalidOperationException();
+					}
+				}
+			}
+		}
+
 		public void IComparerExample()
         {
             try
@@ -436,279 +546,6 @@ namespace CSharp
         // - IEqualityComparer<T> can be useful when you require a custom validation of equality, but not as a general rule.
         // -----------------------------------------------------------------------------------------------------------------------------------------------
 
-
-
-        public void IEnumeratorExample()
-        {
-            try
-            {
-                var employees = MockDataUtility.GetEmployeeMockArray().ToArray();
-                MockDataUtility.PrintployeeMockArray(employees);
-
-                Console.WriteLine();
-                Console.WriteLine($"Using Employee as IEnumerable");
-                var employessAsIEnumerable = new EmployeeIEnumerable(employees);
-                foreach (Employee item in employessAsIEnumerable)
-                    Console.WriteLine($"{item.Rank,3}:{item.Name,-20}:{item.Salary,3:C}");
-
-            }
-            catch (ArgumentException ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-        }
-
-        /// <summary>
-        /// - Exposes an enumerator, which supports a simple iteration over a non-generic collection.
-        /// </summary>
-        class EmployeeIEnumerable : Employee, IEnumerable
-        {
-            private readonly Employee[] employees;
-
-            public EmployeeIEnumerable(Employee[] employees)
-            {
-                this.employees = new Employee[employees.Length];
-                for (int i = 0; i < employees.Length; i++)
-                {
-                    this.employees[i] = employees[i];
-                }
-            }
-
-            public IEnumerator GetEnumerator()
-            {
-                return new EmployeeIEnumerator(employees);
-            }
-        }
-
-        /// <summary>
-        /// - When you implement IEnumerable, you must also implement IEnumerator.
-        /// </summary>
-        class EmployeeIEnumerator : IEnumerator
-        {
-            public Employee[] employees;
-            int position = -1;
-
-            public EmployeeIEnumerator(Employee[] employees)
-            {
-                this.employees = employees;
-            }
-
-            object IEnumerator.Current
-            {
-                get
-                {
-                    return Current;
-                }
-            }
-
-            public Employee Current
-            {
-                get
-                {
-                    try
-                    {
-                        return employees[position];
-                    }
-                    catch (IndexOutOfRangeException)
-                    {
-                        throw new InvalidOperationException();
-                    }
-                }
-            }
-
-            public bool MoveNext()
-            {
-                position++;
-                return (position < employees.Length);
-            }
-
-            public void Reset()
-            {
-                position = -1;
-            }
-        }
-
-        public void ICollectionExample()
-        {
-            try
-            {
-                var employeeCollection = new EmployeeICollection
-                {
-                    new EmployeeIEquatable { Name = "Jon Snow", Rank = 1, Salary = 50000  },
-                    new EmployeeIEquatable { Name = "Nikhilesh", Rank = 2, Salary = 5000  },
-                    new EmployeeIEquatable { Name = "Mad King", Rank = 3, Salary = 55000  },
-                    new EmployeeIEquatable { Name = "Nikhilesh", Rank = 3, Salary = 65000  } //Same name will not be added
-				};
-                MockDataUtility.PrintployeeMockArray(employeeCollection.AsEnumerable());
-                Console.WriteLine($"Remove Nikhilesh (Based on Name)");
-                employeeCollection.Remove(new EmployeeIEquatable { Name = "Nikhilesh" });
-                MockDataUtility.PrintployeeMockArray(employeeCollection.AsEnumerable());
-
-                Console.WriteLine($"employeeCollection.Contains(new EmployeeIEquatable {{ Name = \"Nikhilesh\" }}) > " +
-                    $"{employeeCollection.Contains(new EmployeeIEquatable { Name = "Nikhilesh" })}");
-                Console.WriteLine($"employeeCollection.Contains(new EmployeeIEquatable {{ Name = \"Mad King\" }}) > " +
-                    $"{employeeCollection.Contains(new EmployeeIEquatable { Name = "Mad King" })}");
-            }
-            catch (ArgumentException ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-        }
-
-        /// <summary>
-        /// - Supports a simple iteration over a non-generic collection.
-        /// - IEnumerator is the base interface for all non-generic enumerators. 
-        /// - Its generic equivalent is the System.Collections.Generic.IEnumerator<T> interface.
-        /// </summary>
-        class GenericEmployeeIEnumerator : EmployeeIEquatable, IEnumerator<EmployeeIEquatable>
-        {
-            private int currentIndex;
-            private EmployeeICollection collection;
-            public EmployeeIEquatable Current { get; private set; }
-
-            public GenericEmployeeIEnumerator(EmployeeICollection collection)
-            {
-                this.collection = collection;
-                currentIndex = -1;
-                Current = default(EmployeeIEquatable);
-            }
-
-            object IEnumerator.Current
-            {
-                get { return Current; }
-            }
-
-            public bool MoveNext()
-            {
-                if (++currentIndex >= collection.Count)
-                    return false;
-                else
-                    Current = collection[currentIndex];
-                return true;
-            }
-
-            public void Reset()
-            {
-                currentIndex = -1;
-            }
-
-            public void Dispose()
-            {
-            }
-        }
-
-        /// <summary>
-        /// - Defines methods to manipulate generic collections.
-        /// - The EmployeeICollection class implements the Contains method to use the default equality to determine whether a Employee is in the collection.
-        /// - The EmployeeIEquatable class implements the IEquatable<T> interface to define the default equality as the Employee.Name being the same.
-        /// - This example also implements an IEnumerator<T> interface for the EmployeeIEquatableCollection class so that the collection can be enumerated.
-        /// </summary>
-        class EmployeeICollection : EmployeeIEquatable, ICollection<EmployeeIEquatable>
-        {
-            private List<EmployeeIEquatable> innerCollection;
-
-            public int Count
-            {
-                get
-                {
-                    return innerCollection.Count;
-                }
-            }
-
-            public bool IsReadOnly
-            {
-                get { return false; }
-            }
-
-            public EmployeeICollection()
-            {
-                innerCollection = new List<EmployeeIEquatable>();
-            }
-
-            public IEnumerator<EmployeeIEquatable> GetEnumerator()
-            {
-                return new GenericEmployeeIEnumerator(this);
-            }
-
-            IEnumerator IEnumerable.GetEnumerator()
-            {
-                return new GenericEmployeeIEnumerator(this);
-            }
-
-            public EmployeeIEquatable this[int index]
-            {
-                get { return innerCollection[index]; }
-                set { innerCollection[index] = value; }
-            }
-
-            public bool Contains(EmployeeIEquatable item)
-            {
-                bool found = false;
-
-                foreach (var employee in innerCollection)
-                {
-                    // Equality defined by the employee class's implmentation of IEquatable<T>.
-                    if (employee.Equals(item))
-                        found = true;
-                }
-                return found;
-            }
-
-            public bool Contains(EmployeeIEquatable item, EqualityComparer<EmployeeIEquatable> equalityComparer)
-            {
-                bool found = false;
-                foreach (var employee in innerCollection)
-                {
-                    if (equalityComparer.Equals(employee, item))
-                        found = true;
-                }
-                return found;
-            }
-
-            public void Add(EmployeeIEquatable item)
-            {
-                if (!Contains(item))
-                    innerCollection.Add(item);
-                else
-                    Console.WriteLine($"{item.Rank}:{item.Name} already exists!");
-            }
-
-            public void CopyTo(EmployeeIEquatable[] array, int arrayIndex)
-            {
-                if (array == null)
-                    throw new ArgumentNullException("The array cannot be null.");
-                if (arrayIndex < 0)
-                    throw new ArgumentOutOfRangeException("The starting array index cannot be negative.");
-                if (Count > array.Length - arrayIndex + 1)
-                    throw new ArgumentException("The destination array has fewer elements than the collection.");
-
-                for (int i = 0; i < innerCollection.Count; i++)
-                    array[i + arrayIndex] = innerCollection[i];
-            }
-
-            public bool Remove(EmployeeIEquatable item)
-            {
-                bool result = false;
-
-                // Iterate the inner collection to find the box to be removed.
-                for (int i = 0; i < innerCollection.Count; i++)
-                {
-                    EmployeeIEquatable employee = innerCollection[i];
-                    if (new EmployeeEqualityComparer().Equals(employee, item))
-                    {
-                        innerCollection.RemoveAt(i);
-                        result = true;
-                        break;
-                    }
-                }
-                return result;
-            }
-
-            public void Clear()
-            {
-                innerCollection.Clear();
-            }
-        }
         class EmployeeIEquatable : Employee, IEquatable<Employee>
         {
             public bool Equals(Employee other)

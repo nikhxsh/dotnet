@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ObjectOriented.SystemDesigns
+namespace ObjectOriented.SystemDesigns.LibraryDesign
 {
     enum Bookstatus { Waiting, Pending, Cancelled, None }
     enum AccountStatus { Active, Closed, Cancelled, Flagged, None }
@@ -38,7 +38,7 @@ namespace ObjectOriented.SystemDesigns
         bool UnblockMemeber(string id);
     }
 
-    interface IMember : IAccount
+    interface IMember
     {
         int GetTotalBooksCheckedout();
         bool ReserveBookItem(IBookItem bookItem);
@@ -48,8 +48,8 @@ namespace ObjectOriented.SystemDesigns
         bool CheckForFine(IBookItem bookItem);
     }
 
-    abstract class Account : IAccount
-    {
+    abstract class Account
+	{
         private string id;
         private string name;
         private string password;

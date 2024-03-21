@@ -2,151 +2,152 @@
 
 namespace ObjectOriented.CreationalPatterns
 {
-    /// <summary>
-    /// - Creational Patterns
-    /// - Creates an instance of several families of classes
-    /// - Provide an interface for creating families of related or dependent objects without specifying their concrete.
-    /// - Abstract Factory patterns acts a super-factory which creates other factories. This pattern is also called as Factory of factories.
-    /// - In Abstract Factory pattern an interface is responsible for creating a set of related objects, or dependent objects without specifying 
-    ///   their concrete classes.
-    /// </summary>
-    class AbstractFactoryPattern
+	/// <summary>
+	/// - Creational Patterns
+	/// - Allows you to create families of related objects that have a common theme or purpose
+	/// - Encapsulates the creation logic and hides the specific concrete classes from the client, promoting loose coupling
+	/// - Enables easy substitution of one family of objects with another, as long as they adhere to the common interface or abstract class
+	/// - Provides a structured approach to create and manage related objects, making it easier to extend or modify the family of objects
+	/// </summary>
+	class AbstractFactoryPattern
     {
 
         public AbstractFactoryPattern()
+		{
+			Console.WriteLine("--- Windows Gui ---");
+			var windowsFactory = new WindowsGuiFactory();
+			var widowsUserInterface = new UserInterface(windowsFactory);
+			widowsUserInterface.Render();
+
+
+			Console.WriteLine("--- Mac Gui ---");
+			var macFactory = new MacGuiFactory();
+			var macUserInterface = new UserInterface(macFactory);
+			macUserInterface.Render();
+		}
+
+
+		/// <summary>
+		/// AbstractProductA
+		/// </summary>
+		interface IButton
         {
-            var asia = new AsianFactory();
-            var world = new AnimalWorld(asia);
-            world.RunFoodChain();
-
-            Console.WriteLine("");
-
-            var africa = new AfricanFactory();
-            world = new AnimalWorld(africa);
-            world.RunFoodChain();
+            void Render();
         }
 
-        /// <summary>
-        /// AbstractProductA
-        /// </summary>
-        interface IHerbivore
+
+		/// <summary>
+		/// AbstractProductB
+		/// </summary>
+		interface ICheckbox
+		{
+			void Render();
+		}
+
+		/// <summary>
+		/// AbstractProductA's ProductA1
+		/// </summary>
+		class WindowsButton : IButton
+		{
+			public void Render()
+			{
+                Console.WriteLine("Rendering a Windows button");
+			}
+		}
+
+		/// <summary>
+		/// AbstractProductA's ProductA2
+		/// </summary>
+		class MacButton : IButton
+		{
+			public void Render()
+			{
+				Console.WriteLine("Rendering a Mac button");
+			}
+		}
+
+		/// <summary>
+		/// AbstractProductB's ProductB1
+		/// </summary>
+		class WindowsCheckbox : ICheckbox
+		{
+			public void Render()
+			{
+				Console.WriteLine("Rendering a Windows checkbox");
+			}
+		}
+
+		/// <summary>
+		/// AbstractProductB's ProductB2
+		/// </summary>
+		class MacCheckbox : ICheckbox
+		{
+			public void Render()
+			{
+				Console.WriteLine("Rendering a Mac checkbox");
+			}
+		}
+
+		/// <summary>
+		/// Abstract factory
+		/// </summary>
+		interface IGuiFactory
         {
-            void Eat();
+			IButton CreateButton();
+			ICheckbox CreateCheckbox();
         }
 
-        /// <summary>
-        /// AbstractProductB
-        /// </summary>
-        interface ICarnivore
-        {
-            void Eat(IHerbivore food);
-        }
+		/// <summary>
+		/// Concrete Factory - WindowsFactory
+		/// </summary>
+		class WindowsGuiFactory : IGuiFactory
+		{
+			public IButton CreateButton()
+			{
+				return new WindowsButton();
+			}
 
-        /// <summary>
-        /// AbstractFactory
-        /// </summary>
-        interface IContinentFactory
-        {
-            IHerbivore CreateHerbivore();
-            ICarnivore CreateCarnivore();
-        }
+			public ICheckbox CreateCheckbox()
+			{
+                return new WindowsCheckbox();
+			}
+		}
 
-        /// <summary>
-        /// ConcreteFactory1
-        /// </summary>
-        class AsianFactory : IContinentFactory
-        {
-            public ICarnivore CreateCarnivore()
-            {
-                return new Wolf();
-            }
+		/// <summary>
+		/// Concrete Factory - MacFactory
+		/// </summary>
+		class MacGuiFactory : IGuiFactory
+		{
+			public IButton CreateButton()
+			{
+				return new MacButton();
+			}
 
-            public IHerbivore CreateHerbivore()
-            {
-                return new Bison();
-            }
-        }
+			public ICheckbox CreateCheckbox()
+			{
+				return new MacCheckbox();
+			}
+		}
 
-        /// <summary>
-        /// ConcreteFactory2
-        /// </summary>
-        class AfricanFactory : IContinentFactory
-        {
-            public ICarnivore CreateCarnivore()
-            {
-                return new Lion();
-            }
+		/// <summary>
+		/// The 'Client' class 
+		/// </summary>
+		class UserInterface
+		{
+			private readonly IButton button;
+			private readonly ICheckbox checkbox;
 
-            public IHerbivore CreateHerbivore()
-            {
-                return new WildBeast();
-            }
-        }
+			public UserInterface(IGuiFactory guiFactory)
+			{
+				button = guiFactory.CreateButton();
+				checkbox = guiFactory.CreateCheckbox();
+			}
 
-        /// <summary>
-        /// AbstractProductA's ProductA1
-        /// </summary>
-        class WildBeast : IHerbivore
-        {
-            public void Eat()
-            {
-                Console.WriteLine(this.GetType().Name + " eats vegan");
-            }
-        }
-
-        /// <summary>
-        /// AbstractProductB's ProductB1
-        /// </summary>
-        class Lion : ICarnivore
-        {
-            public void Eat(IHerbivore food)
-            {
-                Console.WriteLine(this.GetType().Name + " eats " + food.GetType().Name);
-            }
-        }
-
-        /// <summary>
-        /// AbstractProductA's ProductA2
-        /// </summary>
-        class Bison : IHerbivore
-        {
-            public void Eat()
-            {
-                Console.WriteLine(this.GetType().Name + " eats vegan");
-            }
-        }
-
-        /// <summary>
-        /// AbstractProductB's ProductB2
-        /// </summary>
-        class Wolf : ICarnivore
-        {
-            public void Eat(IHerbivore food)
-            {
-                Console.WriteLine(this.GetType().Name + " eats " + food.GetType().Name);
-            }
-
-        }
-
-        /// <summary>
-        /// Client
-        /// </summary>
-        class AnimalWorld
-        {
-            private IHerbivore _herbivore;
-            private ICarnivore _carnivore;
-
-            public AnimalWorld(IContinentFactory factory)
-            {
-                _herbivore = factory.CreateHerbivore();
-                _carnivore = factory.CreateCarnivore();
-            }
-
-            public void RunFoodChain()
-            {
-                _herbivore.Eat();
-                _carnivore.Eat(_herbivore);
-            }
-        }
+			public void Render()
+			{
+				button.Render();
+				checkbox.Render();
+			}
+		}
     }
 }

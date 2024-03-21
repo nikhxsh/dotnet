@@ -4,25 +4,25 @@ using ObjectOriented.StructuralPatterns;
 
 namespace ObjectOriented
 {
-    class Program
-    {
-        static void Main(string[] args)
-        {
-            //Creational Patterns
-            new FactoryPattern();
-            new AbstractFactoryPattern();
-            new BuilderPattern();
-            new SingletonPattern();
-            //Structural Patterns
-            new AdapterPattern();
-            new CompositePattern();
-            new DecoratorPattern();
-            new FacadePattern();
-            //Behavioral Patterns
-            new ObserverPattern();
-            new CommandPattern();
+	class Program
+	{
+		static void Main(string[] args)
+		{
+			/* Creational Patterns */
+			//new FactoryPattern();
+			//_ =new AbstractFactoryPattern();
+			//_ = new BuilderPattern();
+			//_ = new SingletonPattern();
+			/* Structural Patterns */
+			//new AdapterPattern();
+			//new CompositePattern();
+			//_ = new DecoratorPattern();
+			//new FacadePattern();
+			/* Behavioral Patterns */
+			//new ObserverPattern();
+			_ = new CommandPattern();
 
-            new Oops();
-        }
-    }
+			//new Oops();
+		}
+	}
 }

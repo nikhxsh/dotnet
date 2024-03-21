@@ -186,8 +186,8 @@ namespace CSharp
             IEnumerable<object> objects = strings;
 
             // For generic type parameters, the out keyword specifies that the type parameter is covariant. You can use the out keyword in generic interfaces and delegates.
-            ICovariant<string> iobj1 = new Covariant<string>();
-            ICovariant<object> istr1 = iobj1;
+            ICovariant<object> iobj1 = new Covariant<object>();
+            ICovariant<string> istr1 = new Covariant<string>();
 
 			// ICovariant<string> istr2 = istr1; // The following statement generates a compiler error because classes are invariant
 
@@ -209,9 +209,9 @@ namespace CSharp
             IContravariant<object> iobj2 = new Sample2<object>();
             IContravariant<string> istr2 = new Sample2<string>();
 
-            // You can assign iobj2 to istr2 because
-            // the IContravariant interface is contravariant.
-            istr2 = iobj2;
+			// You can assign iobj2 to istr2 because
+			// the IContravariant interface is contravariant.
+			istr2 = iobj2;
         }
 
 		// For generic type parameters, the in keyword specifies that the type parameter is covariant
@@ -777,7 +777,7 @@ namespace CSharp
 			// Fit and finish features
 			// - you can omit the type in a new expression when the created object's type is already known
 			private List<WeatherObservation> _observations = new();
-	}
+	    }
 
 		public record Person(long Id)
 		{

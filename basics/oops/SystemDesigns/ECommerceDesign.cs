@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ObjectOriented.SystemDesigns
+namespace ObjectOriented.SystemDesigns.ECommerceDesign
 {
     interface IProduct
     {

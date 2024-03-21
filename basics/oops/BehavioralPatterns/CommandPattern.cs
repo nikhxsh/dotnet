@@ -1,22 +1,25 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 
 namespace ObjectOriented.BehavioralPatterns
 {
-    /// <summary>
-    /// - Behavioral Pattern
-    /// - Encapsulate a command request as an object
-    /// - In this pattern, a request is wrapped under an object as a command and passed to invoker object. 
-    ///   Invoker object pass the command to the appropriate object which can handle it and that object executes the command. 
-    /// - This handles the request in traditional ways like as queuing and callbacks.
-    /// - This pattern is commonly used in the menu systems of many applications such as Editor, IDE etc.
-    /// </summary>
-    class CommandPattern
+	/// <summary>
+	/// - Behavioral Pattern
+	/// - Encapsulate a command request as an object
+	/// - In this pattern, a request is wrapped under an object as a command and passed to invoker object. 
+	///   Invoker object pass the command to the appropriate object which can handle it and that object executes the command. 
+	/// - This handles the request in traditional ways like as queuing and callbacks.
+	/// - This pattern is commonly used in the menu systems of many applications such as Editor, IDE etc.
+	/// </summary>
+	class CommandPattern
     {
         public CommandPattern()
         {
             // Create user and let her compute
-            User user = new User();
+            
+            User user = new();
 
             // User presses calculator buttons
             user.Compute('+', 100);
@@ -30,9 +33,19 @@ namespace ObjectOriented.BehavioralPatterns
             // Redo 3 commands
             user.Redo(3);
 
-            // Wait for user
-            Console.ReadKey();
-        }
+
+            // In memory Transactions
+
+            var tableJson = JObject.Parse(@"{ ""users"": [] }");
+
+            var transaction = new JsonTransaction(tableJson);
+            transaction.Begin();
+            transaction.AddRow("roles", new { id = 1234, name = "Admin" });
+            transaction.Commit();
+            transaction.Print();
+			transaction.AddRow("subs", new { id = "S001", name = "_key" });
+			transaction.Rollback();
+		}
 
         /// <summary>
         /// The 'Command' abstract class
@@ -43,10 +56,11 @@ namespace ObjectOriented.BehavioralPatterns
             void UnExecute();
         }
 
-        /// <summary>
-        /// The 'ConcreteCommand' class
-        /// </summary>
-        class CalculatorCommand : ICommand
+		#region calculator
+		/// <summary>
+		/// The 'ConcreteCommand' class
+		/// </summary>
+		class CalculatorCommand : ICommand
         {
             private char _operator;
             private int _operand;
@@ -164,5 +178,92 @@ namespace ObjectOriented.BehavioralPatterns
                 _current++;
             }
         }
-    }
+		#endregion
+
+		#region Transaction
+
+        class JsonTransaction
+		{
+			private readonly JObject _data;
+			private readonly List<ICommand> commands;
+            private bool _transactionStarted = false;
+
+            public JsonTransaction(JObject data)
+            {
+                _data = data;
+				commands = new List<ICommand>();
+			}
+
+            public void Begin()
+            {
+                _transactionStarted = true;
+			}
+
+            public void AddRow(string key, object values)
+            {
+                commands.Add(new AddRowCommand(_data, key, values));
+			}
+
+            public void Commit()
+            {
+                if(_transactionStarted)
+                {
+                    foreach (var command in commands)
+                    {
+                        command.Execute();
+					}
+					_transactionStarted = false;
+				}
+            }
+
+            public void Rollback()
+			{
+				if (_transactionStarted)
+				{
+					foreach (var command in commands)
+					{
+						command.UnExecute();
+					}
+					_transactionStarted = false;
+				}
+			}
+
+            public void Print()
+            {
+                Console.WriteLine(_data.ToString(Formatting.Indented));
+            }
+        }
+
+		class AddRowCommand : ICommand
+		{
+			private readonly JObject _data;
+			private readonly string _key;
+			private readonly object _values;
+
+			public AddRowCommand(JObject originalData, string key, object values)
+            {
+                _data = originalData;
+                _key = key;
+                _values = values;
+			}
+
+			public void Execute()
+			{
+				if (_data != null && !_data.ContainsKey(_key))
+				{
+					_data.Add(_key, JToken.FromObject(new object[] { _values }));
+				}
+			}
+
+			public void UnExecute()
+			{
+				if (_data != null && _data.ContainsKey(_key))
+				{
+					_data.Remove(_key);
+				}
+			}
+		}
+
+		#endregion
+	}
 }

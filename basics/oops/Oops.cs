@@ -332,10 +332,10 @@ namespace ObjectOriented
 			obj1.Display(); //"Display Parent"
 			Child obj2 = new Child("Child 1");
 			obj2.Display(); //"Display Child 1"
-			Parent obj3 = new Child("Child 2"));
+			Parent obj3 = new Child("Child 2");
 			obj3.Display(); //"Display Parent"
 
-			var objects = new Parent[];
+			var objects = new Parent[] {};
 			objects[0] = new Parent("Parent 1");
 			objects[1] = new Parent("Parent 2");
 			objects[2] = new Child("Child");
@@ -365,7 +365,7 @@ namespace ObjectOriented
 				_childname = name;
 			}
 
-			public void Display()
+			public new void Display()
 			{
 				Console.WriteLine(_childname);
 			}
@@ -604,7 +604,7 @@ namespace ObjectOriented
 			{
 			}
 
-			public void Display()
+			public new void Display()
 			{
 				Console.WriteLine($"India: Welcome to {name}");
 			}

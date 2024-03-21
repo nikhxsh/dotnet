@@ -28,9 +28,31 @@ namespace ObjectOriented.CreationalPatterns
 				string server = balancer.Server;
 				Console.WriteLine($"Dispatch Request {server}");
 			}
+
+			Console.WriteLine($"EarlySingleton Init counter > {EarlySingleton.counter}");
+
+			var earlySingleton1 = EarlySingleton.GetInstance();
+			earlySingleton1.Log("New instace earlySingleton1");
+			Console.WriteLine($"Instance counter > {EarlySingleton.counter}");
+
+			var earlySingleton2 = EarlySingleton.GetInstance();
+			earlySingleton1.Log("New instace earlySingleton2");
+			Console.WriteLine($"Instance counter > {EarlySingleton.counter}");
+
+
+			Console.WriteLine($"LazySingleton Init counter > {LazySingleton.counter}");
+
+			var lazySingleton1 = LazySingleton.GetInstance();
+			lazySingleton1.Log("New instace lazySingleton1");
+			Console.WriteLine($"Instance counter > {LazySingleton.counter}");
+
+			var lazySingleton2 = LazySingleton.GetInstance();
+			lazySingleton1.Log("New instace lazySingleton2");
+			Console.WriteLine($"Instance counter > {LazySingleton.counter}");
+
 		}
 
-		sealed class LoadBalancer
+		public sealed class LoadBalancer
 		{
 			private static LoadBalancer _loadBalancer;
 			private List<string> _servers = new List<string>();
@@ -72,38 +94,69 @@ namespace ObjectOriented.CreationalPatterns
 
 
 		/// <summary>
-		/// We can choose to create the instance of Singleton class when the class is loaded.This is thread-safe without using locking.
+		/// - The instance of the singleton class is created eagerly during the class loading process, regardless of whether it is needed or not
+		/// - The instance is created as soon as the class is loaded
+		/// - The above class creates an instance as soon as we access any static property or method
+		/// - Within the GetInstance() method, we don’t need to write the object initialization, null checking, and thread-safety code, as the CLR will 
+		///	  handle all these things
+		///	- Use eager loading when you have plenty of resources available and want to ensure that the Singleton instance is ready for use immediately
+		///	- Opt for eager loading if the Singleton initialization is quick and inexpensive
+		///	- Eager loading consumes memory when the application starts because the instance is created upfront
 		/// </summary>
 		public sealed class EarlySingleton
 		{
-			//create instance eagerly
-			private static EarlySingleton instance = new EarlySingleton();
+			public static int counter = 0;
 
-			private EarlySingleton() { }
+			//create instance eagerly
+			private static readonly EarlySingleton instance = new EarlySingleton();
+
+			// This will called only once
+			private EarlySingleton()
+			{
+				Console.WriteLine("EarlySingleton Instance Created");
+				counter++;
+			}
 
 			public static EarlySingleton GetInstance()
 			{
-				return instance;//just return the instance
+				return instance;
+			}
+
+			public void Log(string message)
+			{
+				Console.WriteLine(message);
 			}
 		}
 
 		/// <summary>
-		/// - It's simple and performs well. It also allows you to check whether or not the instance has been created yet with the IsValueCreated property
-		/// - The code above implicitly uses LazyThreadSafetyMode.ExecutionAndPublication as the thread safety mode for the Lazy<Singleton>
+		/// - It's simple and performs well
+		/// - It also allows you to check whether or not the instance has been created yet with the IsValueCreated property
+		/// - The code above implicitly uses LazyThreadSafetyMode.ExecutionAndPublication as the thread safety mode for the Lazy<Singleton>, so the Lazy<T> objects are, 
+		///   by default, thread-safe
+		/// - Use lazy loading to conserve resources and only create the Singleton instance when needed
+		/// - Choose lazy loading if the initialization of the Singleton instance involves significant computational or time-consuming tasks
+		/// - Lazy loading can save memory because the Singleton instance is created only when needed
 		/// </summary>
 		public sealed class LazySingleton
 		{
+			public static int counter = 0;
 			//create instance eagerly
 			private static readonly Lazy<LazySingleton> lazySingleton = new Lazy<LazySingleton>(() => new LazySingleton());
 
-			private LazySingleton() { }
-
-			public static LazySingleton GetInstance
+			private LazySingleton()
 			{
-				get
-				{
-					return lazySingleton.Value;
-				}
+				Console.WriteLine("LazySingleton Instance Created");
+				counter++;
+			}
+
+			public static LazySingleton GetInstance()
+			{
+				return lazySingleton.Value;
+			}
+
+			public void Log(string message)
+			{
+				Console.WriteLine(message);
 			}
 		}
 	}

@@ -16,14 +16,26 @@ namespace ObjectOriented.StructuralPatterns
 	{
 		public AdapterPattern()
 		{
-			var targetAdapter1 = new SpanishToEnglish(new Spanish());
-			targetAdapter1.Speak();
+			var spanish = new Spanish();
+			var hindi = new Hindi();
 
-			var targetAdapter2 = new HindiToEnglish(new Hindi());
-			targetAdapter2.Speak();
+			Console.WriteLine("--- Spanish ---");
+			Console.WriteLine(spanish.Hablar());
+
+			Console.WriteLine("--- Hindi ---");
+			Console.WriteLine(hindi.Namaste());
+
+			Console.WriteLine("--- Spanish to Hindi ---");
+			var targetAdapter = new SpanishAdapter(spanish);
+			Console.WriteLine(targetAdapter.Namaste());
 		}
 
-		public class Spanish
+		public interface ISpanish
+		{
+			public string Hablar();
+		}
+
+		public class Spanish : ISpanish
 		{
 			public string Hablar()
 			{
@@ -31,54 +43,31 @@ namespace ObjectOriented.StructuralPatterns
 			}
 		}
 
-		public class Hindi
+		public interface IHindi
+		{
+			public string Namaste();
+		}
+
+		public class Hindi : IHindi
 		{
 			public string Namaste()
-
 			{
 				return "Namaste!";
 			}
 		}
 
-		/// <summary>
-		/// We can use class as well
-		/// </summary>
-		public interface ITargetAdapter
-		{
-			void Speak();
-		}
-
-		public class SpanishToEnglish : ITargetAdapter
+		public class SpanishAdapter : IHindi
 		{
 			private Spanish _spanish { get; set; }
 
-			public SpanishToEnglish(Spanish _spanish)
+			public SpanishAdapter(Spanish _spanish)
 			{
 				this._spanish = _spanish;
 			}
 
-			public void Speak()
+			public string Namaste()
 			{
-				var sentence = _spanish.Hablar();
-				//Translate to english
-				Console.WriteLine($"{sentence} means 'Hello Friends!'");
-			}
-		}
-
-		public class HindiToEnglish : ITargetAdapter
-		{
-			private Hindi _hindi { get; set; }
-
-			public HindiToEnglish(Hindi _hindi)
-			{
-				this._hindi = _hindi;
-			}
-
-			public void Speak()
-			{
-				var sentence = _hindi.Namaste();
-				//Translate to english
-				Console.WriteLine($"{sentence} means 'Hello!'");
+				return _spanish.Hablar();
 			}
 		}
 	}
