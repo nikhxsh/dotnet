@@ -26,13 +26,17 @@ namespace CSharp
 		}
 
 		/// <summary>
-		/// - A task represents an operation that is running or going to run
-		/// - The Task class represents a single operation that does not return a value and that usually executes asynchronously.
-		/// - The work performed by a Task object typically executes asynchronously on a thread pool thread rather than synchronously 
-		///   on the main application thread, you can use the Status property, as well as the IsCanceled, IsCompleted, and IsFaulted 
-		///   properties, to determine the state of a task
-		/// - Tasks typically run asynchronously on a thread pool thread, the thread that creates and starts the task continues execution 
-		///   as soon as the task has been instantiated
+		/// Represents an asynchronous operation that does not return a value.
+		/// 
+		/// The <see cref="Task"/> class is used to encapsulate an asynchronous operation. 
+		/// Tasks execute code asynchronously, typically on a thread pool thread, allowing the main thread to remain responsive.
+		/// 
+		/// You can use the <see cref="Task.Status"/>, <see cref="Task.IsCompleted"/>, <see cref="Task.IsCanceled"/>, 
+		/// and <see cref="Task.IsFaulted"/> properties to monitor the state and outcome of a task.
+		/// 
+		/// Tasks can be used with async/await keywords to simplify asynchronous programming and improve scalability.
+		/// See Microsoft Documentation:
+		/// https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task
 		/// </summary>
 		public void TaskBasics()
 		{
