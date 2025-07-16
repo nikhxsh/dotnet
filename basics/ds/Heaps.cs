@@ -2,6 +2,37 @@
 
 namespace DataStructures
 {
+    /*
+    A Binary Heap is a complete binary tree (every level is filled except possibly the last, and all nodes are as far left as possible) that satisfies a specific heap order property.
+       Min-Heap
+            - Parent ≤ Children
+            - The smallest element is at the root
+            - It’s a priority queue where you always get the minimum value first
+            - E.g.
+                    2
+                   / \
+                  3   4
+                 / \
+                5   8
+        Max-Heap
+            - Parent ≥ Children
+            - The largest element is at the root
+            - It’s a priority queue where you always get the maximum value first
+            - E.g.        
+                    9
+                   / \
+                  7   6
+                 / \
+                3   1
+        Applications of Min-Heap and Max-Heap
+            Use Case                                Heap Type
+            Priority Queue (shortest job)            Min-Heap
+            Median in streaming data            Both (Min + Max Heap)
+            K smallest/largest elements             Min or Max
+            Scheduling / Task Queues                 Min-Heap
+            Heap Sort                                Max-Heap
+            Dijkstra’s algorithm                     Min-Heap
+    */
     class HeapExample
     {
         public HeapExample()
@@ -21,32 +52,19 @@ namespace DataStructures
                 switch (choice)
                 {
                     case 1:
-                        var minHeap = new Heap();
+                        var minHeap = new MinHeap();
                         inputArray = new int[] { 35, 33, 42, 10, 14, 19, 27, 44, 26, 31 };
 
-                        Console.WriteLine();
                         Console.Write("Input Array: ");
                         for (int i = 0; i < inputArray.Length; i++)
+                        {
                             Console.Write($" {inputArray[i]} ");
+                            minHeap.Insert(inputArray[i]);
+                        }
 
-                        minHeap.Size = inputArray.Length;
-                        minHeap.CreateHeap(inputArray);
-
-                        Console.WriteLine();
-                        Console.Write("Mean Heap:");
-                        for (int i = 1; i < minHeap.Size + 1; i++)
-                            Console.Write($" {minHeap.HeapArray[i]} ");
-
-                        Console.WriteLine();
-                        Console.Write("Extract Mean: ");
-                        Console.Write($" {minHeap.ExtractMinOrMax()}\n");
-
-                        Console.Write("Mean Heap:");
-                        for (int i = 1; i < minHeap.Size + 1; i++)
-                            Console.Write($" {minHeap.HeapArray[i]} ");
-
-                        Console.WriteLine();
-                        Console.WriteLine("---------------------------------");
+                        Console.Write($"Peek() {minHeap.Peek()}"); //10
+                        Console.Write($"Max  {minHeap.RemoveMin()}\n"); //10
+                        Console.Write($"Peek() {minHeap.Peek()}"); //14
                         break;
 
                     case 2:
@@ -54,29 +72,16 @@ namespace DataStructures
 
                         inputArray = new int[] { 35, 33, 42, 10, 14, 19, 27, 44, 26, 31 };
 
-                        Console.WriteLine();
                         Console.Write("Input Array: ");
                         for (int i = 0; i < inputArray.Length; i++)
+                        {
                             Console.Write($" {inputArray[i]} ");
+                            maxHeap.Insert(inputArray[i]);
+                        }
 
-                        maxHeap.Size = inputArray.Length;
-                        maxHeap.CreateHeap(inputArray, IsMinHeap: false);
-
-                        Console.WriteLine();
-                        Console.Write("Max Heap: ");
-                        for (int i = 1; i < maxHeap.Size + 1; i++)
-                            Console.Write($" {maxHeap.HeapArray[i]} ");
-
-                        Console.WriteLine();
-                        Console.Write("Extract Max: ");
-                        Console.Write($" {maxHeap.ExtractMinOrMax(IsExtractMin: false)}\n");
-
-                        Console.Write("Max Heap:");
-                        for (int i = 1; i < maxHeap.Size + 1; i++)
-                            Console.Write($" {maxHeap.HeapArray[i]} ");
-
-                        Console.WriteLine();
-                        Console.WriteLine("---------------------------------");
+                        Console.Write($"Peek() {maxHeap.Peek()}"); //44
+                        Console.Write($"Max  {maxHeap.RemoveMax()}\n"); //44
+                        Console.Write($"Peek() {maxHeap.Peek()}"); //42
                         break;
 
                     case 3:
@@ -86,148 +91,140 @@ namespace DataStructures
                         //Price of a ticket is equal to num­ber of tick­ets remain­ing at that win­dow. Write an algo­rithm
                         //to sell ‘k’ tick­ets from these win­dows in such a man­ner so that it gen­er­ates the max­i­mum revenue.
                         var numberOfTickets = new int[] { 5, 1, 7, 10, 11, 9 };
+                        var k=4;
 
-                        ticketsHeap.Size = numberOfTickets.Length;
-                        ticketsHeap.CreateHeap(numberOfTickets, IsMinHeap: false);
-
-                        int ticketToSell = 4;
-                        var maxRevenue = 0;
-
-                        Console.WriteLine();
                         Console.Write("Tickets: ");
                         for (int i = 0; i < numberOfTickets.Length; i++)
+                        {
                             Console.Write($" {numberOfTickets[i]} ");
+                            maxHeap.Insert(numberOfTickets[i]);
+                        }
 
-                        Console.Write($"\nTickets to sell: {ticketToSell}\n");
-
-                        for (int i = 0; i < ticketToSell; i++)
-                            maxRevenue += ticketsHeap.ExtractMinOrMax(IsExtractMin: false);
-
-                        Console.WriteLine($"\nMax Revenue: {maxRevenue}\n");
-                        Console.WriteLine("---------------------------------");
+                        var maxSell = 0;
+                        for (int i = 0; i < k; i++)
+                        {
+                            maxSell += maxHeap.RemoveMax();
+                        }
+                        
+                        Console.Write($"Max Sell with {k} tickets: {maxSell}");
                         break;
                 }
             } while (choice != 4);
         }
 
-        public class Heap
+        public class MinHeap
         {
-            public int Size { get; set; }
-
-            public int[] HeapArray;
-            public int Position { get; set; }
-            public Heap()
+            private List<int> heap = new();
+        
+            public int Count => heap.Count;
+        
+            public void Insert(int val)
             {
-                Position = 0;
+                heap.Add(val);
+                HeapifyUp(Count - 1);
             }
-
-            public void CreateHeap(int[] inputArray, bool IsMinHeap = true)
+        
+            public int Peek()
             {
-                HeapArray = new int[Size + 1];
-
-                for (int i = 0; i < inputArray.Length; i++)
-                {
-                    if (Position == 0)
-                    {
-                        HeapArray[Position + 1] = inputArray[i];
-                        Position = 2;
-                    }
-                    else
-                    {
-                        HeapArray[Position++] = inputArray[i];
-                        if (IsMinHeap)
-                            BubleUpMinHeap();
-                        else
-                            BubleUpMaxHeap();
-                    }
-                }
+                if (Count == 0) throw new InvalidOperationException("Heap is empty.");
+                return heap[0];
             }
-
-            private void BubleUpMinHeap()
+        
+            public int RemoveMin()
             {
-                int checkPoint = Position - 1;
-
-                while (checkPoint > 0 && HeapArray[checkPoint / 2] > HeapArray[checkPoint])
-                {
-                    Swap(checkPoint, checkPoint / 2);
-                    checkPoint /= 2;
-                }
-            }
-
-            private void BubleUpMaxHeap()
-            {
-                int checkPoint = Position - 1;
-
-                while ((checkPoint > 0) && (checkPoint / 2 > 0) && (HeapArray[checkPoint / 2] < HeapArray[checkPoint]))
-                {
-                    Swap(checkPoint, checkPoint / 2);
-                    checkPoint /= 2;
-                }
-            }
-
-            public int ExtractMinOrMax(bool IsExtractMin = true)
-            {
-                //Replace last node of Heap with Root node
-                int min = HeapArray[1];
-                HeapArray[1] = HeapArray[Position - 1];
-                HeapArray[Position - 1] = 0;
-                Position--;
-                if (IsExtractMin)
-                    MinHeapSinkDown(1);
-                else
-                    MaxHeapSinkDown(1);
+                if (Count == 0) throw new InvalidOperationException("Heap is empty.");
+                int min = heap[0];
+                heap[0] = heap[^1];
+                heap.RemoveAt(Count - 1);
+                HeapifyDown(0);
                 return min;
             }
-
-            private void MinHeapSinkDown(int index)
+        
+            private void HeapifyUp(int i)
             {
-                int temp = HeapArray[index];
-                int smallestItemAt = index;
-
-                //Check If replaced ele­ment is greater than any of its left child node
-                if (2 * index < Position && HeapArray[smallestItemAt] > HeapArray[2 * index])
-                    smallestItemAt = 2 * index;
-
-
-                //Check If replaced ele­ment is greater than any of its Right child node
-                if (2 * index + 1 < Position && HeapArray[smallestItemAt] > HeapArray[2 * index + 1])
-                    smallestItemAt = 2 * index + 1;
-
-                if (smallestItemAt != index)
+                while (i > 0)
                 {
-                    Swap(index, smallestItemAt);
-                    //Go down till leaf node
-                    MinHeapSinkDown(smallestItemAt);
+                    int parent = (i - 1) / 2;
+                    if (heap[i] >= heap[parent]) break;
+                    (heap[i], heap[parent]) = (heap[parent], heap[i]);
+                    i = parent;
                 }
             }
-
-            private void MaxHeapSinkDown(int index)
+        
+            private void HeapifyDown(int i)
             {
-                int temp = HeapArray[index];
-                int largestItemAt = index;
-
-                //Check If replaced ele­ment is greater than any of its left child node
-                if (2 * index < Position && HeapArray[largestItemAt] < HeapArray[2 * index])
-                    largestItemAt = 2 * index;
-
-
-                //Check If replaced ele­ment is greater than any of its Right child node
-                if (2 * index + 1 < Position && HeapArray[largestItemAt] < HeapArray[2 * index + 1])
-                    largestItemAt = 2 * index + 1;
-
-                if (largestItemAt != index)
+                while (true)
                 {
-                    Swap(index, largestItemAt);
-                    //Go down till leaf node
-                    MinHeapSinkDown(largestItemAt);
+                    int left = 2 * i + 1;
+                    int right = 2 * i + 2;
+                    int smallest = i;
+        
+                    if (left < Count && heap[left] < heap[smallest]) smallest = left;
+                    if (right < Count && heap[right] < heap[smallest]) smallest = right;
+        
+                    if (smallest == i) break;
+        
+                    (heap[i], heap[smallest]) = (heap[smallest], heap[i]);
+                    i = smallest;
                 }
             }
+        }
 
-            private void Swap(int TargetIndex, int SourceIndex)
+        public class MaxHeap
+        {
+            private List<int> heap = new();
+        
+            public int Count => heap.Count;
+        
+            public void Insert(int val)
             {
-                HeapArray[TargetIndex] = HeapArray[TargetIndex] + HeapArray[SourceIndex];
-                HeapArray[SourceIndex] = HeapArray[TargetIndex] - HeapArray[SourceIndex];
-                HeapArray[TargetIndex] = HeapArray[TargetIndex] - HeapArray[SourceIndex];
+                heap.Add(val);
+                HeapifyUp(Count - 1);
+            }
+        
+            public int Peek()
+            {
+                if (Count == 0) throw new InvalidOperationException("Heap is empty.");
+                return heap[0];
+            }
+        
+            public int RemoveMax()
+            {
+                if (Count == 0) throw new InvalidOperationException("Heap is empty.");
+                int max = heap[0];
+                heap[0] = heap[^1];
+                heap.RemoveAt(Count - 1);
+                HeapifyDown(0);
+                return max;
+            }
+        
+            private void HeapifyUp(int i)
+            {
+                while (i > 0)
+                {
+                    int parent = (i - 1) / 2;
+                    if (heap[i] <= heap[parent]) break;
+                    (heap[i], heap[parent]) = (heap[parent], heap[i]);
+                    i = parent;
+                }
+            }
+        
+            private void HeapifyDown(int i)
+            {
+                while (true)
+                {
+                    int left = 2 * i + 1;
+                    int right = 2 * i + 2;
+                    int largest = i;
+        
+                    if (left < Count && heap[left] > heap[largest]) largest = left;
+                    if (right < Count && heap[right] > heap[largest]) largest = right;
+        
+                    if (largest == i) break;
+        
+                    (heap[i], heap[largest]) = (heap[largest], heap[i]);
+                    i = largest;
+                }
             }
         }
     }
