@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 
 namespace CSharp
 {
-	/// <summary>
+    /// <summary>
 	/// - Memory 
 	///   1. When any process gets triggered, separate virtual space is assigned to that process, from a physical memory which is the same and used 
 	///      by every process of a system, any program deals with virtual space not with physical memory, GC also deals with the same virtual memory 
@@ -46,16 +46,27 @@ namespace CSharp
 	///   1. Managed resources: Created, managed and under scope of CLR, pure .NET code managed by runtime, Anything that lies within .NET scope and under 
 	///     .NET framework classes such as string, int, bool variables are referred to as managed code.
 	///   2. Unmanaged resources: Created outside the control of .NET libraries and are not managed by CLR, example:
-    ///      - COM objects
-    ///      - File streams
-    ///      - Connection objects
-    ///      - Network related instances
-    ///      - Interop objects
-    ///      - Registries 
-    ///      - Pointers
-    ///      (Basically, third party libraries that are referred in .NET code.)
+	///      - File Handles
+	///        File streams that directly wrap unmanaged OS file handles (especially when using native APIs).
+	///        Example: IntPtr fileHandle = CreateFile(...);
+	///      - Database Connections (via Native Drivers)
+	///        Connections using unmanaged native drivers, like OLE DB or ODBC.
+	///        Example: OleDbConnection conn = new OleDbConnection(...);
+	///      - Window Handles (HWND)
+	///        Handles to UI windows created with Win32 or user controls hosted in unmanaged containers.
+	///        Example: IntPtr hwnd = FindWindow(...)
+	///      - Network Sockets
+	///        Low-level socket resources that use native system handles.
+	///        Example: Socket socket = new Socket(...);
+	///      - Memory Pointers (Allocated Manually)
+	///        Memory allocated outside the managed heap, e.g., using Marshal.AllocHGlobal or malloc via P/Invoke.
+	///        Example: IntPtr unmanagedPtr = Marshal.AllocHGlobal(100);
+	///      - COM Objects
+	///	   Any object instantiated via COM interop.
+	///        Example: dynamic excelApp = Activator.CreateInstance(Type.GetTypeFromProgID("Excel.Application"));
+	///      (Basically, third party libraries that are referred in .NET code.)
 	/// </summary>
-	class GarbageCollection
+    class GarbageCollection
     {
         public void Play()
         {
