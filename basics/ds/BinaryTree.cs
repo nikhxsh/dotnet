@@ -787,31 +787,29 @@ namespace DataStructures
             outputList = new List<Node<T>>();
         }
 
-        public List<Node<T>> GetLeverOrder(Node<T> root)
+        public int GetTreeHeight(Node<T> root)
         {
+            if (root == null) return 0;
+            
+            int height = 0;
             var queue = new Queue<Node<T>>();
             queue.Enqueue(root);
 
-            while (true)
+            while (queue.Count > 0)
             {
-                var nodeCount = queue.Count;
-
-                if (nodeCount == 0) break;
-
-                while (nodeCount > 0)
+                int level = queue.Count;
+                while (level > 0)
                 {
                     var node = queue.Dequeue();
-                    outputList.Add(node);
                     if (node.Left != null)
                         queue.Enqueue(node.Left);
                     if (node.Right != null)
                         queue.Enqueue(node.Right);
-
-                    nodeCount--;
+                    level--;
                 }
-                outputList.Add(new Node<T>(0));
+                height++;
             }
-            return outputList;
+            return height;
         }
 
         /// <summary>
