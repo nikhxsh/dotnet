@@ -49,6 +49,7 @@ namespace CSharp
 
 
         /// <summary>
+    	/// Non-generic collection
         /// - Represents a collection of key/value pairs that are sorted by key based on the associated IComparer<T> implementation.
         /// - A SortedList object internally maintains two arrays to store the elements of the list; that is, one array for the keys 
         ///   and another array for the associated values.
@@ -81,41 +82,45 @@ namespace CSharp
             {
                 Console.WriteLine("An element with Key = \"txt\" already exists.");
             }
-		}
+	}
 
-		/// <summary>
-		/// - Inheritance: Object -> Hashtable
-        /// - Represents a collection of key/value pairs that are organized based on the hash code of the key
-		/// - A Hashtable object consists of buckets that contain the elements of the collection. A bucket is a virtual subgroup of elements within the Hashtable, 
-		///   which makes searching and retrieving easier and faster than in most collections. Each bucket is associated with a hash code, which is generated using 
-		///   a hash function and is based on the key of the element.
-		/// - When an object is added to a Hashtable, it is stored in the bucket that is associated with the hash code that matches the object's hash code. When a value 
-		///   is being searched for in the Hashtable, the hash code is generated for that value, and the bucket associated with that hash code is searched.
-        ///   
-		///   For example, a hash function for a string might take the ASCII codes of each character in the string and add them together to generate a hash code.The string 
-		///   "picnic" would have a hash code that is different from the hash code for the string "basket"; therefore, the strings "picnic" and "basket" would be in different 
-		///   buckets.In contrast, "stressed" and "desserts" (anagram) would have the same hash code and would be in the same bucket.
-		/// </summary>
-		private void Hashtable()
+	/// <summary>
+	/// - Inheritance: Object -> Hashtable
+	/// - Represents a collection of key/value pairs that are organized based on the hash code of the key
+	/// - A Hashtable object consists of buckets that contain the elements of the collection. A bucket is a virtual subgroup of elements within the Hashtable, 
+	///   which makes searching and retrieving easier and faster than in most collections. Each bucket is associated with a hash code, which is generated using 
+	///   a hash function and is based on the key of the element.
+	/// - When an object is added to a Hashtable, it is stored in the bucket that is associated with the hash code that matches the object's hash code. When a value 
+	///   is being searched for in the Hashtable, the hash code is generated for that value, and the bucket associated with that hash code is searched.
+	///   
+	///   For example, a hash function for a string might take the ASCII codes of each character in the string and add them together to generate a hash code.The string 
+	///   "picnic" would have a hash code that is different from the hash code for the string "basket"; therefore, the strings "picnic" and "basket" would be in different 
+	///   buckets.In contrast, "stressed" and "desserts" (anagram) would have the same hash code and would be in the same bucket.
+        ///   Limitations of Hashtable
+        ///   - Non-generic: You lose type safety and need type casting.
+        ///   - No LINQ support: Unlike generic collections like Dictionary<TKey, TValue>.
+        ///   - Slower than generic alternatives in many cases.
+	/// </summary>
+	private void Hashtable()
         {
-            Hashtable hashtable = new Hashtable
-            {
-				// Add some elements to the hash table. There are no duplicate keys, but some of the values are duplicates.
-				{ "txt", "notepad.exe" },
-                { "bmp", "paint.exe" },
-                { "dib", "paint.exe" },
-                { "rtf", "wordpad.exe" },
-				{ "stressed", "stressed.exe" }
-			};
+	   Hashtable hashtable = new Hashtable
+	   {
+		// Add some elements to the hash table. There are no duplicate keys, but some of the values are duplicates.
+		{ "txt", "notepad.exe" },
+		{ "bmp", "paint.exe" },
+		{ "dib", "paint.exe" },
+		{ "rtf", "wordpad.exe" },
+		{ "stressed", "stressed.exe" }
+	    };
             try
             {
-				hashtable.Add("desserts", "desserts.exe"); // would have the same hash code and would be in the same bucket as stressed
+		hashtable.Add("desserts", "desserts.exe"); // would have the same hash code and would be in the same bucket as stressed
 
-				// hashtable.Add("txt", "winword.exe"); //System.ArgumentException: 'Item has already been added. Key in dictionary: 'txt'  Key being added: 'txt''
+		// hashtable.Add("txt", "winword.exe"); //System.ArgumentException: 'Item has already been added. Key in dictionary: 'txt'  Key being added: 'txt''
 
-				//DictionaryEntry Struct: Defines a dictionary key/value pair that can be set or retrieved.
-				//Enumeration: O(n)
-				foreach (DictionaryEntry item in hashtable)
+		//DictionaryEntry Struct: Defines a dictionary key/value pair that can be set or retrieved.
+		//Enumeration: O(n)
+		foreach (DictionaryEntry item in hashtable)
                     Console.WriteLine($"{item.Key,-10}:{item.Value,5}");
             }
             catch
